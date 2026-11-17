@@ -45,10 +45,10 @@ class SurveyService {
                   r.distanceKm = 0.12;
                   r.goodnessScore = 24;
                   r.condition = 'Critical';
-                  r.dronePhotoThumb = 'https://upload.wikimedia.org/wikipedia/commons/3/36/Large_pothole.jpg';
-                  r.dronePhoto = 'https://upload.wikimedia.org/wikipedia/commons/3/36/Large_pothole.jpg';
-                  r.dronePhoto2Thumb = 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Pothole_in_an_asphalt_pavement.jpg';
-                  r.dronePhoto2 = 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Pothole_in_an_asphalt_pavement.jpg';
+                  r.dronePhotoThumb = '/images/pothole_1.jpg';
+                  r.dronePhoto = '/images/pothole_1.jpg';
+                  r.dronePhoto2Thumb = '/images/pothole_2.jpg';
+                  r.dronePhoto2 = '/images/pothole_2.jpg';
                   needsResave = true;
                 }
               }

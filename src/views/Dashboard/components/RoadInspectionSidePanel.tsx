@@ -50,7 +50,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
   onSelectPothole,
 }) => {
   const navigate = useNavigate();
-  const [activeMediaTab, setActiveMediaTab] = useState<'video' | 'photos' | 'potholes' | 'project_info'>('video');
+  const [activeMediaTab, setActiveMediaTab] = useState<'video' | 'potholes' | 'project_info'>('video');
   const [zoomPhotoUrl, setZoomPhotoUrl] = useState<string | null>(null);
   const [dispatchToast, setDispatchToast] = useState<string | null>(null);
 
@@ -359,18 +359,6 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
         </button>
 
         <button
-          onClick={() => setActiveMediaTab('photos')}
-          className={`px-2.5 py-2.5 border-b-2 font-semibold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-            activeMediaTab === 'photos'
-              ? 'border-[#1a73e8] text-[#1a73e8]'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Camera className="w-3.5 h-3.5" />
-          <span>Drone Orthophotos</span>
-        </button>
-
-        <button
           onClick={() => setActiveMediaTab('potholes')}
           className={`px-2.5 py-2.5 border-b-2 font-semibold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
             activeMediaTab === 'potholes'
@@ -554,78 +542,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
           </div>
         )}
 
-        {/* 2. DRONE ORTHOPHOTOS */}
-        {activeMediaTab === 'photos' && (
-          <div className="space-y-3">
-            {isPendingDrone ? (
-              <div className="p-8 text-center bg-slate-50 border border-dashed border-slate-300 rounded-xl space-y-2">
-                <Camera className="w-8 h-8 text-slate-400 mx-auto" />
-                <h5 className="text-xs font-bold text-slate-700">No Orthophoto Scans Captured Yet</h5>
-                <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
-                  High-resolution aerial orthomosaics will be automatically processed once the drone aerial patrol flight is executed.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="text-xs font-semibold text-slate-700">
-                  High-Resolution Orthomosaic Aerial Scans (2 Views):
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Photo 1: Top Orthogonal View */}
-                  <div className="relative group rounded-lg overflow-hidden border border-slate-300 bg-slate-900 aspect-[4/3]">
-                    <img
-                      src={orthophotos.topDown}
-                      alt="Top Down Aerial"
-                      className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 left-2 bg-red-600 text-white font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                      TOP-DOWN AERIAL SCAN
-                    </div>
-                    <button
-                      onClick={() => setZoomPhotoUrl(orthophotos.topDown)}
-                      className="absolute bottom-2 right-2 p-1.5 bg-black/75 hover:bg-black text-white rounded text-xs transition cursor-pointer"
-                      title="Expand Photo"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  {/* Photo 2: 3D Oblique Photogrammetry */}
-                  <div className="relative group rounded-lg overflow-hidden border border-slate-300 bg-slate-900 aspect-[4/3]">
-                    <img
-                      src={orthophotos.oblique}
-                      alt="3D Oblique Surface Distress"
-                      className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute top-2 left-2 bg-blue-600 text-white font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                      OBLIQUE 45° SURFACE POTHOLE
-                    </div>
-                    <button
-                      onClick={() => setZoomPhotoUrl(orthophotos.oblique)}
-                      className="absolute bottom-2 right-2 p-1.5 bg-black/75 hover:bg-black text-white rounded text-xs transition cursor-pointer"
-                      title="Expand Photo"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-2.5 bg-blue-50/60 rounded border border-blue-200 text-xs text-blue-900 space-y-1">
-                  <div className="font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#1a73e8]" />
-                    <span>Laser Photogrammetry Analysis</span>
-                  </div>
-                  <p className="text-[11px] text-blue-800 leading-normal">
-                    {orthophotos.description}
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* 3. POTHOLE DEFECT INVENTORY */}
+        {/* 2. POTHOLE DEFECT INVENTORY */}
         {activeMediaTab === 'potholes' && (
           <div className="space-y-2.5">
             {isPendingDrone ? (
@@ -661,9 +578,10 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
                           src={p.photoUrl}
                           alt={p.title}
                           className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
                           onError={(e) => {
                             e.currentTarget.onerror = null;
-                            e.currentTarget.src = 'https://upload.wikimedia.org/wikipedia/commons/3/36/Large_pothole.jpg';
+                            e.currentTarget.src = '/images/pothole_4.jpg';
                           }}
                         />
                         <span className="absolute top-1 left-1 bg-red-600 text-white text-[8px] font-mono font-bold px-1 rounded">

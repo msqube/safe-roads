@@ -61,25 +61,25 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
         lat: 22.58168,
         lng: 88.47288,
         ch: 'Km 0+018',
-        thumb: 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Pothole_in_an_asphalt_pavement.jpg',
+        thumb: '/images/pothole_1.jpg',
       },
       {
         lat: 22.58195,
         lng: 88.47298,
         ch: 'Km 0+045',
-        thumb: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Pothole_Big.jpg',
+        thumb: '/images/pothole_2.jpg',
       },
       {
         lat: 22.58232,
         lng: 88.47312,
         ch: 'Km 0+082',
-        thumb: 'https://upload.wikimedia.org/wikipedia/commons/8/83/Pothole_repair.jpg',
+        thumb: '/images/pothole_3.jpg',
       },
       {
         lat: 22.58255,
         lng: 88.47320,
         ch: 'Km 0+105',
-        thumb: 'https://upload.wikimedia.org/wikipedia/commons/3/36/Large_pothole.jpg',
+        thumb: '/images/pothole_4.jpg',
       },
     ];
 
@@ -511,16 +511,17 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                   <img
                     src={snap.thumbnailUrl}
                     alt={snap.chainage}
+                    referrerPolicy="no-referrer"
                     className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
                         snap.snapNumber === 4
-                          ? 'https://upload.wikimedia.org/wikipedia/commons/3/36/Large_pothole.jpg'
+                          ? '/images/pothole_4.jpg'
                           : snap.snapNumber === 3
-                          ? 'https://upload.wikimedia.org/wikipedia/commons/8/83/Pothole_repair.jpg'
+                          ? '/images/pothole_3.jpg'
                           : snap.snapNumber === 2
-                          ? 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Pothole_Big.jpg'
-                          : 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Pothole_in_an_asphalt_pavement.jpg';
+                          ? '/images/pothole_2.jpg'
+                          : '/images/pothole_1.jpg';
                     }}
                   />
                   <span

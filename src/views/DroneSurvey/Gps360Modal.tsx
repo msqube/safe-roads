@@ -6,6 +6,7 @@ import { MapPin, Eye, Video, Upload, CheckCircle2, FileUp, X, Sparkles, FileText
 import { GenericButton } from '../../common/GenericButton';
 import { DroneVideoPlayer } from '../Dashboard/components/DroneVideoPlayer';
 import { getCorridorPotholes } from '../../services/newTownGisData';
+import { UploadNsvReportModal } from '../../common/UploadNsvReportModal';
 
 interface Gps360ModalProps {
   isOpen: boolean;
@@ -27,34 +28,15 @@ export const Gps360Modal: React.FC<Gps360ModalProps> = ({
     return localStorage.getItem(`nsv_uploaded_${record.roadCode}`) === 'true';
   });
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadedFileName, setUploadedFileName] = useState<string>('NSV_Report_NKDA_Road_MAR_1111_Reference_Style.pdf');
-  const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
 
   // Sync upload state when record changes
   React.useEffect(() => {
     if (record) {
       setIsNsvUploaded(localStorage.getItem(`nsv_uploaded_${record.roadCode}`) === 'true');
-      setUploadSuccess(false);
     }
   }, [record]);
 
   if (!record) return null;
-
-  const handleProcessUpload = () => {
-    setIsUploading(true);
-    setTimeout(() => {
-      localStorage.setItem(`nsv_uploaded_${record.roadCode}`, 'true');
-      localStorage.setItem(`nsv_pdf_name_${record.roadCode}`, uploadedFileName);
-      setIsNsvUploaded(true);
-      setIsUploading(false);
-      setUploadSuccess(true);
-      setTimeout(() => {
-        setShowUploadModal(false);
-        setUploadSuccess(false);
-      }, 900);
-    }, 800);
-  };
 
   const isMar1111 = record.roadCode === 'MAR-1111' || record.roadCode.includes('1111');
   const gpsLat = isMar1111 ? 22.58210 : record.gpsLatitude;
@@ -63,35 +45,90 @@ export const Gps360Modal: React.FC<Gps360ModalProps> = ({
   const potholeCount = isMar1111 ? 4 : record.potholeCount;
   const roughCost = isMar1111 ? 2820000 : record.roughCostINR;
 
-  // Mock snap points around the clicked GPS coordinate
-  const snapPoints = [
-    {
-      id: 'SNP-01',
-      snapNumber: 1,
-      chainage: isMar1111 ? 'Km 0+018 (Lane 1)' : record.chainage,
-      gps: { lat: gpsLat, lng: gpsLng },
-      timestamp: '09:45:12',
-      droneAltitudeMeters: 32.4,
-      droneSpeedKmh: 14.2,
-      cameraPitchDegrees: -90,
-      thumbnailUrl: record.dronePhotoThumb,
-      defectsDetected: potholeCount,
-      surfaceCondition: record.condition,
-    },
-    {
-      id: 'SNP-02',
-      snapNumber: 2,
-      chainage: isMar1111 ? 'Km 0+082 (Lane 1)' : `${record.chainage} + 150m`,
-      gps: { lat: gpsLat + 0.0003, lng: gpsLng + 0.0002 },
-      timestamp: '09:45:38',
-      droneAltitudeMeters: 32.1,
-      droneSpeedKmh: 14.5,
-      cameraPitchDegrees: -45,
-      thumbnailUrl: record.dronePhoto2Thumb,
-      defectsDetected: 1,
-      surfaceCondition: 'Fair',
-    },
-  ];
+  // Snap points across the corridor (all 4 verified potholes for MAR-1111)
+  const snapPoints = isMar1111
+    ? [
+        {
+          id: 'SNP-01',
+          snapNumber: 1,
+          chainage: 'Km 0+018 (Lane 1)',
+          gps: { lat: 22.58168, lng: 88.47288 },
+          timestamp: '09:45:12',
+          droneAltitudeMeters: 32.4,
+          droneSpeedKmh: 14.2,
+          cameraPitchDegrees: -90,
+          thumbnailUrl: '/images/pothole_1.jpg',
+          defectsDetected: 1,
+          surfaceCondition: 'Critical' as const,
+        },
+        {
+          id: 'SNP-02',
+          snapNumber: 2,
+          chainage: 'Km 0+045 (Lane 1)',
+          gps: { lat: 22.58195, lng: 88.47298 },
+          timestamp: '09:45:25',
+          droneAltitudeMeters: 31.8,
+          droneSpeedKmh: 13.9,
+          cameraPitchDegrees: -45,
+          thumbnailUrl: '/images/pothole_2.jpg',
+          defectsDetected: 1,
+          surfaceCondition: 'Critical' as const,
+        },
+        {
+          id: 'SNP-03',
+          snapNumber: 3,
+          chainage: 'Km 0+082 (Lane 1)',
+          gps: { lat: 22.58232, lng: 88.47312 },
+          timestamp: '09:45:38',
+          droneAltitudeMeters: 32.1,
+          droneSpeedKmh: 14.5,
+          cameraPitchDegrees: -45,
+          thumbnailUrl: '/images/pothole_3.jpg',
+          defectsDetected: 1,
+          surfaceCondition: 'Critical' as const,
+        },
+        {
+          id: 'SNP-04',
+          snapNumber: 4,
+          chainage: 'Km 0+105 (Lane 1)',
+          gps: { lat: 22.58255, lng: 88.47320 },
+          timestamp: '09:45:50',
+          droneAltitudeMeters: 30.5,
+          droneSpeedKmh: 12.8,
+          cameraPitchDegrees: -90,
+          thumbnailUrl: '/images/pothole_4.jpg',
+          defectsDetected: 1,
+          surfaceCondition: 'Critical' as const,
+        },
+      ]
+    : [
+        {
+          id: 'SNP-01',
+          snapNumber: 1,
+          chainage: record.chainage,
+          gps: { lat: gpsLat, lng: gpsLng },
+          timestamp: '09:45:12',
+          droneAltitudeMeters: 32.4,
+          droneSpeedKmh: 14.2,
+          cameraPitchDegrees: -90,
+          thumbnailUrl: record.dronePhotoThumb,
+          defectsDetected: potholeCount,
+          surfaceCondition: record.condition,
+        },
+        {
+          id: 'SNP-02',
+          snapNumber: 2,
+          chainage: `${record.chainage} + 150m`,
+          gps: { lat: gpsLat + 0.0003, lng: gpsLng + 0.0002 },
+          timestamp: '09:45:38',
+          droneAltitudeMeters: 32.1,
+          droneSpeedKmh: 14.5,
+          cameraPitchDegrees: -45,
+          thumbnailUrl: record.dronePhoto2Thumb,
+          defectsDetected: 1,
+          surfaceCondition: 'Fair',
+        },
+      ];
 
   const hotspots = [
     {
@@ -254,92 +291,16 @@ export const Gps360Modal: React.FC<Gps360ModalProps> = ({
         )}
 
         {/* Embedded Upload NSV Report Modal */}
-        {showUploadModal && (
-          <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-lg w-full p-5 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                <div className="flex items-center gap-2">
-                  <FileUp className="w-5 h-5 text-[#1a73e8]" />
-                  <h3 className="text-sm font-bold text-slate-900">
-                    Upload Certified NSV Report for {record.roadCode}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowUploadModal(false)}
-                  className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Upload the official Network Survey Vehicle (NSV) survey document (PDF or Word format). The system will automatically parse the Laser Profilometer telemetry, IRI roughness, 4 verified potholes, and MoRTH repair calculations.
-              </p>
-
-              {/* Upload Drop Zone */}
-              <div
-                onClick={handleProcessUpload}
-                className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50 space-y-2 hover:bg-slate-100 hover:border-blue-400 transition cursor-pointer"
-              >
-                <Upload className="w-8 h-8 text-slate-400 mx-auto" />
-                <div className="text-xs font-semibold text-slate-700">
-                  Drag and drop NSV PDF report or data logs here, or click to browse
-                </div>
-                <div className="text-[11px] text-slate-400">
-                  Supports: Official NSV PDF Report (14 Pages), Word DOCX, ROMDAS Telemetry Log
-                </div>
-              </div>
-
-              {/* Fast 1-Click Load Reference MAR-1111 Report */}
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-xs text-blue-900 flex items-center justify-between gap-3">
-                <div>
-                  <span className="font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                    Reference NSV Report Ready:
-                  </span>
-                  <p className="text-[11px] text-blue-800">
-                    Load certified 14-Page NSV Survey Report for {record.roadCode} (120m Resurfacing, 4 Potholes, IRI 5.20).
-                  </p>
-                </div>
-                <button
-                  disabled={isUploading}
-                  onClick={handleProcessUpload}
-                  className="px-3 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold rounded-lg text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs whitespace-nowrap"
-                >
-                  {isUploading ? (
-                    <>
-                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Processing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Ingest Report</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Success Feedback */}
-              {uploadSuccess && (
-                <div className="p-2.5 bg-emerald-50 border border-emerald-300 rounded-lg text-xs font-semibold text-emerald-900 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>NSV Report parsed successfully! Unlocking full NSV details...</span>
-                </div>
-              )}
-
-              {/* Footer */}
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-200">
-                <button
-                  onClick={() => setShowUploadModal(false)}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <UploadNsvReportModal
+          isOpen={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          roadCode={record.roadCode}
+          roadName={record.roadName}
+          onUploadSuccess={() => {
+            setIsNsvUploaded(true);
+            setShowUploadModal(false);
+          }}
+        />
       </div>
     </GenericModal>
   );

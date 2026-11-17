@@ -198,12 +198,12 @@ const DRONES = [
 
 // Real photographic road and pothole imagery
 export const REAL_ROAD_PHOTOS = {
-  potholeAerial1: 'https://upload.wikimedia.org/wikipedia/commons/3/36/Large_pothole.jpg',
-  potholePavement1: 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Pothole_in_an_asphalt_pavement.jpg',
-  potholeDeep1: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Pothole_Big.jpg',
-  potholeRepair1: 'https://upload.wikimedia.org/wikipedia/commons/8/83/Pothole_repair.jpg',
-  tarmacCracked1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Potholes_in_road.jpg/800px-Potholes_in_road.jpg',
-  road360Panorama: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Large_pothole.jpg/800px-Large_pothole.jpg',
+  potholeAerial1: '/images/pothole_4.jpg',
+  potholePavement1: '/images/pothole_1.jpg',
+  potholeDeep1: '/images/pothole_2.jpg',
+  potholeRepair1: '/images/pothole_3.jpg',
+  tarmacCracked1: '/images/pothole_4.jpg',
+  road360Panorama: '/images/pothole_2.jpg',
 };
 
 // Rich Photographic Gallery for Diverse Corridors in New Town Kolkata (Strictly Real Road Potholes)
@@ -212,8 +212,8 @@ export const CORRIDOR_ORTHOPHOTOS: Record<
   { topDown: string; oblique: string; description: string }
 > = {
   'MAR-1111': {
-    topDown: 'https://upload.wikimedia.org/wikipedia/commons/3/36/Large_pothole.jpg',
-    oblique: 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Pothole_in_an_asphalt_pavement.jpg',
+    topDown: '/images/pothole_1.jpg',
+    oblique: '/images/pothole_2.jpg',
     description:
       'Biswa Bangla Sarani (6-Lane Arterial): Autonomous aerial inspection reveals 4 critical potholes along Lane 1 slow wheelpath. Maximum rutting reaches 20mm with localized pavement distress.',
   },
@@ -532,8 +532,8 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
         potholeCount = 4;
         roughCostINR = 2820000; // ₹28.20 Lakhs (Part 1: ₹3,72,000 + Part 2: ₹24,48,000) from DPR formula!
         costPerM2 = 2720; // WB PWD SoR 2022-2025 unit cost per m²
-        photo1 = REAL_ROAD_PHOTOS.potholeAerial1;
-        photo2 = REAL_ROAD_PHOTOS.potholePavement1;
+        photo1 = '/images/pothole_1.jpg';
+        photo2 = '/images/pothole_2.jpg';
         status = 'Assigned';
         assignedTeam = 'NKDA Quick-Action Bitumen Crew #1';
         targetRepairDate = '2026-11-18';

@@ -104,8 +104,7 @@ export const NewTownGisMap: React.FC<NewTownGisMapProps> = ({
     const streetTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors | SafeRoads NKDA',
-      keepBuffer: 3,
-      updateWhenZooming: false,
+      keepBuffer: 6,
     });
 
     const activeTileLayer = mapType === 'satellite' ? satelliteTiles : streetTiles;
@@ -118,11 +117,33 @@ export const NewTownGisMap: React.FC<NewTownGisMapProps> = ({
     corridorsLayerGroupRef.current = corridorsGroup;
     potholesLayerGroupRef.current = potholesGroup;
 
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 200);
+    // Setup ResizeObserver to guarantee the map re-calculates tiles whenever its container resizes
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize({ pan: false });
+      }
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    const handleWindowResize = () => {
+      mapInstanceRef.current?.invalidateSize({ pan: false });
+    };
+    window.addEventListener('resize', handleWindowResize);
+
+    // Multi-stage size invalidation so tiles aggressively fill the container as DOM layout settles
+    const timers = [
+      setTimeout(() => map.invalidateSize({ pan: false }), 50),
+      setTimeout(() => map.invalidateSize({ pan: false }), 150),
+      setTimeout(() => map.invalidateSize({ pan: false }), 350),
+      setTimeout(() => map.invalidateSize({ pan: false }), 700),
+    ];
 
     return () => {
+      timers.forEach(clearTimeout);
+      window.removeEventListener('resize', handleWindowResize);
+      resizeObserver.disconnect();
       map.remove();
       mapInstanceRef.current = null;
     };
@@ -159,10 +180,12 @@ export const NewTownGisMap: React.FC<NewTownGisMapProps> = ({
         : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors | SafeRoads NKDA',
+            keepBuffer: 6,
           });
 
     newLayer.addTo(map);
     tileLayerRef.current = newLayer;
+    setTimeout(() => map.invalidateSize({ pan: false }), 50);
   }, [mapType]);
 
   // Render Corridors and Potholes
@@ -670,7 +693,9 @@ export const NewTownGisMap: React.FC<NewTownGisMapProps> = ({
 
   // Auto-focus camera on corridor selection
   useEffect(() => {
-    if (!mapInstanceRef.current || !selectedRoadCode) return;
+    if (!mapInstanceRef.current) return;
+    mapInstanceRef.current.invalidateSize({ pan: false });
+    if (!selectedRoadCode) return;
     const s = surveys.find((survey) => survey.roadCode === selectedRoadCode);
     if (!s) return;
 
@@ -682,6 +707,13 @@ export const NewTownGisMap: React.FC<NewTownGisMapProps> = ({
         duration: 0.8,
       });
     }
+
+    const t1 = setTimeout(() => mapInstanceRef.current?.invalidateSize({ pan: false }), 400);
+    const t2 = setTimeout(() => mapInstanceRef.current?.invalidateSize({ pan: false }), 900);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [selectedRoadCode, surveys]);
 
   return (
@@ -799,7 +831,7 @@ export const NewTownGisMap: React.FC<NewTownGisMapProps> = ({
       </div>
 
       {/* Leaflet Canvas */}
-      <div className="relative flex-1 w-full min-h-[460px]">
+      <div className="relative flex-1 w-full min-h-[460px] h-full bg-slate-100">
         <div ref={mapContainerRef} className="w-full h-full z-0" style={{ isolation: 'isolate' }} />
 
         {/* Legend Overlay Bottom-Left */}

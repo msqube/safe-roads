@@ -228,9 +228,9 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Main Split Grid: Left Map (60%) vs Right Inspection Side Panel (40%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch min-h-[580px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch min-h-[580px] lg:h-[720px]">
         {/* Left Column: GIS Map (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col min-h-[500px]">
+        <div className="lg:col-span-7 flex flex-col h-full min-h-[500px]">
           <NewTownGisMap
             surveys={filteredSurveys}
             selectedRoadCode={selectedRoadCode}
@@ -248,7 +248,7 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Right Column: Inspection Side Panel or Overview Hub (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col min-h-[500px]">
+        <div className="lg:col-span-5 flex flex-col h-full min-h-[500px] overflow-hidden">
           {selectedSurvey ? (
             <RoadInspectionSidePanel
               survey={selectedSurvey}
