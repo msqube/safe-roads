@@ -227,7 +227,7 @@ export const DPRDirectoryTable: React.FC<DPRDirectoryTableProps> = ({
                     className="w-full py-2 px-3 bg-[#34a853] hover:bg-[#2d9247] text-white text-xs font-bold rounded-lg shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4" />
-                    <span>Release Tender (Publish e-NIT)</span>
+                    <span>Release Official Tender Document</span>
                   </button>
                 ) : (
                   <div className="flex items-center gap-2">

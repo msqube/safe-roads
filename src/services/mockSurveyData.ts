@@ -1248,6 +1248,24 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
       const contingency3 = Math.round(subTotal * 0.03);
       const totalCost = subTotal + gst18 + contingency3;
 
+      const isUploadedInStorage =
+        typeof window !== 'undefined' &&
+        (localStorage.getItem(`nsv_uploaded_${matched.roadCode}`) === 'true' ||
+          localStorage.getItem(`dpr_approved_${matched.roadCode}`) === 'true' ||
+          localStorage.getItem(`nsv_uploaded_${roadCode}`) === 'true' ||
+          localStorage.getItem(`dpr_approved_${roadCode}`) === 'true');
+
+      const isTenderPublished =
+        typeof window !== 'undefined' &&
+        localStorage.getItem(`tender_published_${matched.roadCode}`) === 'true';
+
+      const hasNsvSurvey = isMar1111 || isUploadedInStorage;
+      const hasDroneSurvey = true;
+      const isBlocked = !hasNsvSurvey;
+      const blockReason = !hasNsvSurvey
+        ? 'No NSV Survey has been performed yet. Certified laser profilometer roughness (IRI) and rut depth survey required under IRC:SP:19-2020 prior to DPR formulation and tender release.'
+        : undefined;
+
       // 3-Stage Sequential Review Process
       const reviews: ReviewStage[] = [
         {
@@ -1256,9 +1274,11 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
           authorityRole: 'Executive Engineer (Roads & Quality Control)',
           authorityName: 'Er. Subhashis Sen, WBHIDCO / WB PWD',
           authorityEmail: 'ee.roads.hidco@wb.gov.in',
-          status: isMar1111 ? 'Approved' : 'Pending',
-          reviewedAt: isMar1111 ? '16 Nov 2026, 11:45 IST' : undefined,
-          remarks: isMar1111 ? 'Laser profilometer (IRI 5.20 m/km) and 4 potholes (1.86 m², 20mm depth) verified on-site. Resurfacing of 120m segment approved under IRC:37-2018.' : undefined,
+          status: hasNsvSurvey ? 'Approved' : 'Pending',
+          reviewedAt: hasNsvSurvey ? '16 Nov 2026, 11:45 IST' : undefined,
+          remarks: hasNsvSurvey
+            ? `Laser profilometer (IRI 5.20 m/km) and surface defects verified from certified NSV Report for ${matched.roadCode}. Resurfacing approved under IRC:37-2018.`
+            : undefined,
         },
         {
           stageId: 2,
@@ -1266,9 +1286,11 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
           authorityRole: 'Financial Controller & Chief Accounts Officer',
           authorityName: 'Shri Partha Mukherjee, WBCS (Exe)',
           authorityEmail: 'finance.controller@nkda.gov.in',
-          status: isMar1111 ? 'Approved' : 'Pending',
-          reviewedAt: isMar1111 ? '16 Nov 2026, 12:15 IST' : undefined,
-          remarks: isMar1111 ? 'Budget head 4059-Road Infrastructure Capital Works vetted. Estimate of ₹9,59,875 sanctioned for 120m segment.' : undefined,
+          status: hasNsvSurvey ? 'Approved' : 'Pending',
+          reviewedAt: hasNsvSurvey ? '16 Nov 2026, 12:15 IST' : undefined,
+          remarks: hasNsvSurvey
+            ? `Budget head 4059-Road Infrastructure Capital Works vetted. Estimate of ₹${totalCost.toLocaleString('en-IN')} sanctioned.`
+            : undefined,
         },
         {
           stageId: 3,
@@ -1276,29 +1298,30 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
           authorityRole: 'Chief Executive Officer (CEO)',
           authorityName: 'Dr. Debashis Sen, IAS (Retd) / CEO NKDA',
           authorityEmail: 'ceo.nkda@wb.gov.in',
-          status: isMar1111 ? 'Approved' : 'Pending',
-          reviewedAt: isMar1111 ? '16 Nov 2026, 13:00 IST' : undefined,
-          remarks: isMar1111 ? 'Administrative approval granted. Competent authority authorizes immediate publication of e-NIT on wbtenders.gov.in.' : undefined,
+          status: hasNsvSurvey ? 'Approved' : 'Pending',
+          reviewedAt: hasNsvSurvey ? '16 Nov 2026, 13:00 IST' : undefined,
+          remarks: hasNsvSurvey
+            ? 'Administrative approval granted. Competent authority authorizes immediate publication of e-NIT on wbtenders.gov.in.'
+            : undefined,
         },
       ];
 
-      const tender: TenderNotice | undefined = isMar1111 ? {
-        nitNumber: 'NIT-NKDA/WBHIDCO/ROADS/2026/001',
-        workName: 'Urgent Restoration, 4 Pothole Patching & 120m Bituminous Resurfacing of NKDA Road MAR 1111 (Chainage 0+000 to 0+120), Action Area I, New Town Kolkata.',
+      const tender: TenderNotice | undefined = hasNsvSurvey ? {
+        nitNumber: `NIT-NKDA/WBHIDCO/ROADS/2026/${matched.roadCode.replace(/[^0-9]/g, '').slice(-3) || '001'}`,
+        workName: `Urgent Restoration, 4 Pothole Patching & Resurfacing of ${matched.roadName} (${matched.roadCode}), ${matched.location}, New Town Kolkata.`,
         executingAgency: 'New Town Kolkata Development Authority (NKDA) & WBHIDCO',
         estimatedCostINR: totalCost,
         earnestMoneyINR: Math.round(totalCost * 0.02),
         completionPeriodDays: 30,
-        bidSubmissionDeadline: '2026-12-07 17:00 IST',
-        technicalBidOpenDate: '2026-12-09 11:30 IST',
-        financialBidOpenDate: '2026-12-14 15:00 IST',
+        bidSubmissionDeadline: '2026-12-15 17:00 IST',
+        technicalBidOpenDate: '2026-12-17 11:30 IST',
+        financialBidOpenDate: '2026-12-22 15:00 IST',
         portalUrl: 'https://wbtenders.gov.in',
         eligibilityCriteria: [
           'Registered Class-I / Class-II Road Contractors under WB PWD / WBHIDCO / NKDA / KMDA.',
           'Credential: At least 1 completed road bituminous surfacing work of minimum 40% tender value in the last 3 financial years.',
           'Valid GSTIN, PAN card, Professional Tax (PT) clearance, and EPF/ESI registration in West Bengal.',
           'Proof of ownership or assured lease agreement of Central Hot Mix Plant (min 100 TPH) within 40 km of New Town.',
-          'Average annual turnover of minimum 50% tender value over the last 3 audited financial years.',
         ],
         mandatoryDocuments: [
           'Form-1 (Technical Bid Submission Application)',
@@ -1307,18 +1330,9 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
           'PAN, GST Registration & latest GSTR-3B filing acknowledgement',
           'Machinery Deployment Schedule & Plant Calibration Certificate',
         ],
-        releasedAt: 'Pending Release',
-        tenderStatus: 'Draft',
+        releasedAt: isTenderPublished ? '16 Nov 2026, 14:15 IST' : 'Pending Release',
+        tenderStatus: isTenderPublished ? 'Published' : 'Draft',
       } : undefined;
-
-      const hasNsvSurvey = isMar1111;
-      const hasDroneSurvey = isMar1111 || matched.pipelineTier === 'drone_only';
-      const isBlocked = !isMar1111;
-      const blockReason = !hasDroneSurvey
-        ? 'No Drone Survey has been performed yet for this road. Autonomous aerial defect patrol required.'
-        : !hasNsvSurvey
-        ? 'No NSV Survey has been performed yet. Certified laser profilometer roughness (IRI) and rut depth survey required under IRC:SP:19-2020 prior to DPR formulation and tender release.'
-        : undefined;
 
       return {
         dprNumber,

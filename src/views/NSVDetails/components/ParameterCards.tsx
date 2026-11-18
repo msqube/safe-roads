@@ -28,6 +28,47 @@ export const ParameterCards: React.FC<ParameterCardsProps> = ({ details, onJumpT
 
   return (
     <div className="space-y-4">
+      {/* Materials Used to Build Road Breakdown */}
+      {details.roadCode.includes('1111') && (
+        <div className="p-3.5 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 border border-blue-200 rounded-xl space-y-2 text-xs shadow-2xs font-sans">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <span className="font-bold text-slate-900 flex items-center gap-1.5">
+              <Layers className="w-4 h-4 text-blue-600" />
+              <span>Materials Used to Build Road (Flexible Bituminous Pavement):</span>
+            </span>
+            <span className="text-[10px] font-mono text-blue-800 bg-white px-2 py-0.5 rounded border border-blue-200 font-semibold">
+              MoRTH Section 500 / IRC:37 Pavement Design
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-[11px]">
+            <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+              <span className="text-red-700 font-bold block text-[10px] uppercase">1. Wearing Course (40mm)</span>
+              <p className="text-slate-800 font-semibold">Bituminous Concrete (BC Grade-1)</p>
+              <p className="text-slate-500 text-[10px]">With PMB-40 Polymer Modified Bitumen for high shear resistance</p>
+            </div>
+
+            <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+              <span className="text-amber-700 font-bold block text-[10px] uppercase">2. Binder Course (50mm)</span>
+              <p className="text-slate-800 font-semibold">Dense Bituminous Macadam (DBM-II)</p>
+              <p className="text-slate-500 text-[10px]">VG-30/VG-40 heavy axle load distribution across wheelpaths</p>
+            </div>
+
+            <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+              <span className="text-blue-700 font-bold block text-[10px] uppercase">3. Base Course (250mm)</span>
+              <p className="text-slate-800 font-semibold">Wet Mix Macadam (WMM Base)</p>
+              <p className="text-slate-500 text-[10px]">Crushed graded aggregate mechanically compacted at OMC</p>
+            </div>
+
+            <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+              <span className="text-emerald-700 font-bold block text-[10px] uppercase">4. Sub-Base (200mm)</span>
+              <p className="text-slate-800 font-semibold">Granular Sub-Base (GSB Grade-I)</p>
+              <p className="text-slate-500 text-[10px]">Interlayer drainage over subgrade + RS-1 Tack Coat (0.25 kg/m²)</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Parameter Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* 1. Roughness (Shows image of that road roughness) */}

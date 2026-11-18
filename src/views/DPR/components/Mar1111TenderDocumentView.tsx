@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   FileText,
   Printer,
@@ -13,8 +14,11 @@ import {
   FileCheck,
   Layers,
   Download,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { DPRRecord } from '../../../models/dprModels';
+import { WorkflowPipelineTrail } from '../../../common/WorkflowPipelineTrail';
 
 interface Mar1111TenderDocumentViewProps {
   dpr: DPRRecord;
@@ -34,18 +38,54 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
       : '16 Nov 2026, 14:15 IST'
   );
 
+  // Carousel & Document Viewer State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [docViewMode, setDocViewMode] = useState<'carousel' | 'all'>('carousel');
+  const totalPages = 4;
+
+  // Dynamic 3-step tender formulation & publishing loader state
+  const [isPublishingTender, setIsPublishingTender] = useState<boolean>(false);
+  const [tenderStep, setTenderStep] = useState<number>(1);
+  const [tenderSuccessToast, setTenderSuccessToast] = useState<string | null>(null);
+
   const handlePublish = () => {
-    setIsPublished(true);
-    setPublishTimestamp(new Date().toLocaleString('en-IN') + ' IST');
-    if (onPublishSuccess) {
-      onPublishSuccess();
-    }
+    setIsPublishingTender(true);
+    setTenderStep(1);
+    setTimeout(() => setTenderStep(2), 550);
+    setTimeout(() => setTenderStep(3), 1100);
+    setTimeout(() => {
+      setIsPublishingTender(false);
+      setIsPublished(true);
+      const ts = new Date().toLocaleString('en-IN') + ' IST';
+      setPublishTimestamp(ts);
+      localStorage.setItem(`tender_published_${dpr.roadCode}`, 'true');
+      setTenderSuccessToast('Notice Inviting Tender (e-NIT) successfully generated and published live to wbtenders.gov.in!');
+      setTimeout(() => setTenderSuccessToast(null), 5000);
+      if (onPublishSuccess) {
+        onPublishSuccess();
+      }
+    }, 1650);
   };
 
   return (
     <div className="space-y-6">
+      {/* Toast Notification */}
+      {tenderSuccessToast && (
+        <div className="fixed bottom-5 right-5 z-50 p-3 bg-emerald-50 border border-emerald-300 rounded-lg shadow-xl text-xs font-semibold text-emerald-950 flex items-center gap-2 animate-in fade-in duration-200">
+          <CheckCircle2 className="w-4 h-4 text-[#34a853] flex-shrink-0" />
+          <span>{tenderSuccessToast}</span>
+        </div>
+      )}
+
+      {/* Modern Workflow Pipeline Trail: Step 4 Active */}
+      <WorkflowPipelineTrail
+        currentStep={4}
+        roadCode={dpr.roadCode}
+        roadName={dpr.roadName}
+      />
+
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-5 rounded-xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-5 rounded-xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 no-print">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
@@ -75,7 +115,7 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
             className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-semibold rounded-lg transition cursor-pointer flex items-center gap-1.5"
           >
             <Printer className="w-4 h-4" />
-            <span>Print Tender Document</span>
+            <span>Print Document</span>
           </button>
 
           {!isPublished ? (
@@ -97,7 +137,7 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
 
       {/* Published Status Banner */}
       {isPublished && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs no-print">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-5 h-5 text-[#34a853] flex-shrink-0" />
             <div>
@@ -121,8 +161,112 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
         </div>
       )}
 
-      {/* Main Official 7-Page e-NIT Document Body */}
-      <div className="bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed font-sans">
+      {/* PDF Page Navigation & Carousel Toolbar */}
+      <div className="bg-white p-3.5 border border-slate-200 rounded-xl shadow-xs flex flex-col md:flex-row items-center justify-between gap-3 no-print">
+        {/* Left: Prev / Current Page / Next */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className={`p-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 transition ${
+              currentPage === 1
+                ? 'text-slate-300 border-slate-200 cursor-not-allowed'
+                : 'text-slate-700 border-slate-300 hover:bg-slate-100 cursor-pointer'
+            }`}
+            title="Previous Page"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Prev Page</span>
+          </button>
+
+          <div className="px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-xs font-mono font-bold text-slate-800">
+            Page {currentPage} of {totalPages}
+          </div>
+
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className={`p-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 transition ${
+              currentPage === totalPages
+                ? 'text-slate-300 border-slate-200 cursor-not-allowed'
+                : 'text-slate-700 border-slate-300 hover:bg-slate-100 cursor-pointer'
+            }`}
+            title="Next Page"
+          >
+            <span className="hidden sm:inline">Next Page</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Center: Quick Page Jump Pills */}
+        <div className="flex items-center gap-1 overflow-x-auto max-w-full pb-1 md:pb-0">
+          {[
+            { num: 1, label: 'Page 1: e-NIT Notice' },
+            { num: 2, label: 'Page 2: Scope & Credentials' },
+            { num: 3, label: 'Page 3: ITB Clauses' },
+            { num: 4, label: 'Page 4: Annexures & Seal' },
+          ].map((tab) => (
+            <button
+              key={tab.num}
+              onClick={() => {
+                setCurrentPage(tab.num);
+                if (docViewMode === 'all') setDocViewMode('carousel');
+              }}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition cursor-pointer whitespace-nowrap ${
+                currentPage === tab.num && docViewMode === 'carousel'
+                  ? 'bg-[#34a853] text-white shadow-2xs'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Right: View Mode Toggle & Print */}
+        <div className="flex items-center gap-2">
+          <div className="bg-slate-100 p-0.5 rounded-lg border border-slate-200 flex items-center text-xs">
+            <button
+              onClick={() => setDocViewMode('carousel')}
+              className={`px-2 py-1 rounded-md font-semibold transition cursor-pointer ${
+                docViewMode === 'carousel'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Page View
+            </button>
+            <button
+              onClick={() => setDocViewMode('all')}
+              className={`px-2 py-1 rounded-md font-semibold transition cursor-pointer ${
+                docViewMode === 'all'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              All Pages
+            </button>
+          </div>
+
+          <button
+            onClick={() => window.print()}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Print all pages sequentially as official PDF"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print (PDF)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 1: OFFICIAL NOTICE INVITING e-TENDER (e-NIT) & CRITICAL DATES         */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 1 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed font-sans mb-6`}
+      >
         {/* NKDA Official Header Band */}
         <div className="p-6 bg-slate-50 border-b border-slate-200 text-center space-y-1.5">
           <div className="w-12 h-12 mx-auto rounded-full bg-blue-100 border border-blue-300 flex items-center justify-center text-blue-900 font-black text-sm mb-1">
@@ -219,7 +363,7 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
                   </tr>
                   <tr>
                     <td className="p-2 font-medium">
-                      Opening of Technical Bid at Office of Executive Engineer (R&amp;B), Plot No. DG/13, Premises No. 04-3333, Action Area-ID, New Town
+                      Opening of Technical Bid at Office of Executive Engineer (R&amp;B), Plot No. DG/13, Action Area-ID
                     </td>
                     <td className="p-2 font-mono font-bold text-[#1a73e8]">09.12.2026 at 1.00 P.M.</td>
                   </tr>
@@ -253,7 +397,40 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
               <div>(ii) RTGS / NEFT by generating challan from e-tender portal in favour of <em>"New Town Kolkata Development Authority"</em> payable at Kolkata at least 3 working days before bid closing date.</div>
             </div>
           </div>
+        </div>
 
+        {/* Page 1 Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-mono no-print">
+          <div>Notice No. 01/EE(R&amp;B)/NKDA/2026-27 • Page 1 of 4</div>
+          <button
+            onClick={() => setCurrentPage(2)}
+            className="px-3.5 py-1.5 bg-[#34a853] hover:bg-[#2d9247] text-white font-bold rounded-lg transition cursor-pointer flex items-center gap-1 shadow-2xs"
+          >
+            <span>Page 2: Scope &amp; Credentials</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 2: PROJECT & ELIGIBILITY DETAILS (TECHNICAL & FINANCIAL CRITERIA)     */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 2 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed font-sans mb-6`}
+      >
+        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="font-bold text-slate-800">
+            OFFICIAL TENDER DOCUMENT • e-NIT No. 01/EE(R&amp;B)/NKDA/2026-27
+          </div>
+          <div className="flex items-center gap-3 text-slate-500">
+            <span>Road NKDA MAR 1111</span>
+            <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">PAGE 2 OF 4</span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 space-y-6">
           {/* 2. PROJECT & ELIGIBILITY DETAILS */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1">
@@ -270,14 +447,14 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
                   <tr>
                     <td className="p-2.5 font-bold text-slate-800 bg-slate-50">Estimated Cost of Work</td>
                     <td className="p-2.5 font-mono text-slate-900">
-                      <div>Part 1 (Pothole Filling): Formula: Potholes × Avg Depth × Avg Area × Rs. 10,000</div>
-                      <div>Part 2 (BC Resurfacing): Formula: Length × Avg Depth × Road Width × Rs. 30,000</div>
+                      <div>Part 1 (Pothole Filling): Formula: Potholes × Avg Depth × Avg Area × Rs. 10,000 = ₹3,72,000</div>
+                      <div>Part 2 (BC Resurfacing): Formula: Length × Avg Depth × Road Width × Rs. 30,000 = ₹24,48,000</div>
                       <div className="font-bold text-emerald-700 text-xs mt-0.5">Combined Indicative Estimate: Rs. 28,20,000 (₹28.20 Lakhs)</div>
                     </td>
                   </tr>
                   <tr>
                     <td className="p-2.5 font-bold text-slate-800 bg-slate-50">Earnest Money (2% of Estimated Cost)</td>
-                    <td className="p-2.5 font-mono text-red-600 font-bold">2% of Estimated Tender Amount via online gateway</td>
+                    <td className="p-2.5 font-mono text-red-600 font-bold">Rs. 56,400 (2% of ₹28,20,000) via online gateway</td>
                   </tr>
                   <tr>
                     <td className="p-2.5 font-bold text-slate-800 bg-slate-50">Tender Inviting Authority</td>
@@ -286,23 +463,23 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
                   <tr>
                     <td className="p-2.5 font-bold text-slate-800 bg-slate-50">Eligibility Criteria (Technical Credentials)</td>
                     <td className="p-2.5 text-slate-700 space-y-1">
-                      <div>1. Credentials of similar nature Bituminous Road work of minimum <strong>40% of estimated amount</strong> in a single contract; OR</div>
-                      <div>2. Credentials of 2 similar Bituminous Road works of minimum <strong>30% each</strong>; OR</div>
+                      <div>1. Credentials of similar nature Bituminous Road work of minimum <strong>40% of estimated amount (₹11.28L)</strong> in a single contract; OR</div>
+                      <div>2. Credentials of 2 similar Bituminous Road works of minimum <strong>30% each (₹8.46L)</strong>; OR</div>
                       <div>3. Credentials of one single running work completed to <strong>80% or more</strong> and value not less than <strong>40%</strong>.</div>
                     </td>
                   </tr>
                   <tr>
                     <td className="p-2.5 font-bold text-slate-800 bg-slate-50">Financial Capability &amp; Turnover</td>
                     <td className="p-2.5 text-slate-700 space-y-1">
-                      <div>• Average Annual Turnover for past 3 Financial Years: &ge; <strong>50% of estimated amount</strong>.</div>
-                      <div>• Available Liquid Assets: &ge; <strong>10% of estimated cost</strong>.</div>
+                      <div>• Average Annual Turnover for past 3 Financial Years: &ge; <strong>50% of estimated amount (₹14.10L)</strong>.</div>
+                      <div>• Available Liquid Assets: &ge; <strong>10% of estimated cost (₹2.82L)</strong>.</div>
                     </td>
                   </tr>
                   <tr>
                     <td className="p-2.5 font-bold text-slate-800 bg-slate-50">Plant, Machinery &amp; Technical Manpower</td>
                     <td className="p-2.5 text-slate-700 space-y-1">
-                      <div>• <strong>Batch Mix Plant:</strong> Agency must own a running Batch Mix Plant (Light Duty) within <strong>10 KM</strong> from work site.</div>
-                      <div>• <strong>Site Lab &amp; Supervisor:</strong> Site testing lab + Diploma Civil Engineer (3 yrs exp) or Graduate Civil Engineer (1 yr exp).</div>
+                      <div>• <strong>Batch Mix Plant:</strong> Agency must own a running Batch Mix Plant (Light Duty) within <strong>10 KM</strong> from work site to ensure viscosity compliance.</div>
+                      <div>• <strong>Site Lab &amp; Supervisor:</strong> Dedicated site testing lab + Diploma Civil Engineer (3 yrs exp) or Graduate Civil Engineer (1 yr exp).</div>
                     </td>
                   </tr>
                   <tr>
@@ -315,20 +492,62 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
               </table>
             </div>
           </div>
+        </div>
 
+        {/* Page 2 Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-mono no-print">
+          <div>Notice No. 01/EE(R&amp;B)/NKDA/2026-27 • Page 2 of 4</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(1)}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Page 1</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage(3)}
+              className="px-3.5 py-1.5 bg-[#34a853] hover:bg-[#2d9247] text-white font-bold rounded-lg transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <span>Page 3: ITB Clauses</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 3: INFORMATION TO BIDDERS (ITB) & GENERAL TERMS                      */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 3 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed font-sans mb-6`}
+      >
+        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="font-bold text-slate-800">
+            OFFICIAL TENDER DOCUMENT • e-NIT No. 01/EE(R&amp;B)/NKDA/2026-27
+          </div>
+          <div className="flex items-center gap-3 text-slate-500">
+            <span>Road NKDA MAR 1111</span>
+            <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">PAGE 3 OF 4</span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 space-y-6">
           {/* 3. ITB & GENERAL TERMS */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1">
               3. Information to Bidders (ITB) &amp; General Terms:
             </h3>
 
-            <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-2 text-[11px] text-slate-700">
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-2.5 text-[11px] text-slate-700">
               <div><strong>1. Two-Bid Online Submission:</strong> Register on https://etender.wb.nic.in / www.wbtenders.gov.in with Class-II/III DSC. Technical bid PDF and Financial bid BOQ uploaded concurrently.</div>
-              <div><strong>2. Firm Price &amp; 1% Cess:</strong> Inclusive of all taxes, GST, royalties, and 1% BOCW Welfare Cess deducted from bills. No price escalation.</div>
-              <div><strong>3. Security Deposit:</strong> 10% deducted from each Running Account bill, released after final settlement and 1-year DLP.</div>
-              <div><strong>4. Agreement &amp; Commencement:</strong> Execute WBF 2911(ii) within 7 days of Work Order and commence work within 7 days.</div>
-              <div><strong>5. Quality Control:</strong> MoRTH/IRC specifications; batch mix plant within 10 km to maintain viscosity temperature.</div>
-              <div><strong>6. Photographic Documentation:</strong> Site photos before, during, and after execution submitted with bills.</div>
+              <div><strong>2. Firm Price &amp; 1% Cess:</strong> Inclusive of all taxes, GST, royalties, and 1% BOCW Welfare Cess deducted from bills. No price escalation will be entertained.</div>
+              <div><strong>3. Security Deposit:</strong> 10% deducted from each Running Account bill, released after final settlement and completion of 1-year Defect Liability Period (DLP).</div>
+              <div><strong>4. Agreement &amp; Commencement:</strong> Execute West Bengal Form No. 2911(ii) within 7 days of Work Order and commence work within 7 days.</div>
+              <div><strong>5. Quality Control:</strong> Strict compliance with MoRTH Section 500 / IRC specifications; batch mix plant must be within 10 km to maintain required laying temperatures (140°C - 160°C).</div>
+              <div><strong>6. Photographic Documentation:</strong> Site photos before, during, and after execution along with profilometer telemetry submitted with running bills.</div>
               <div><strong>7. Dispute Resolution:</strong> Governed by Govt. of West Bengal Finance Department Memorandum No. 8182-F(Y) dated 26.09.2012.</div>
             </div>
 
@@ -339,9 +558,9 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
           </div>
 
           {/* COPY FORWARDED */}
-          <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1 text-[10px] text-slate-600">
+          <div className="p-3.5 bg-slate-50 rounded border border-slate-200 space-y-1.5 text-[10px] text-slate-600">
             <span className="font-bold text-slate-800 block">Copy forwarded for information to:</span>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               <div>1. Chief Executive Officer, NKDA</div>
               <div>2. Chief Engineer, NKDA</div>
               <div>3. Superintending Engineer, NKDA</div>
@@ -353,9 +572,51 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
               <div>9. Official Website of NKDA &amp; Govt of W.B.</div>
             </div>
           </div>
+        </div>
 
+        {/* Page 3 Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-mono no-print">
+          <div>Notice No. 01/EE(R&amp;B)/NKDA/2026-27 • Page 3 of 4</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(2)}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Page 2</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage(4)}
+              className="px-3.5 py-1.5 bg-[#34a853] hover:bg-[#2d9247] text-white font-bold rounded-lg transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <span>Page 4: Annexures &amp; Seal</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 4: MANDATORY SUBMISSION ANNEXURES & OFFICIAL SEALS                   */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 4 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed font-sans mb-6`}
+      >
+        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="font-bold text-slate-800">
+            OFFICIAL TENDER DOCUMENT • e-NIT No. 01/EE(R&amp;B)/NKDA/2026-27
+          </div>
+          <div className="flex items-center gap-3 text-slate-500">
+            <span>Road NKDA MAR 1111</span>
+            <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">PAGE 4 OF 4</span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 space-y-6">
           {/* ANNEXURE-I: SAMPLE FORMAT FOR AFFIDAVIT */}
-          <div className="space-y-3 pt-4 border-t border-slate-200">
+          <div className="space-y-3">
             <div className="text-center space-y-0.5">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900">
                 ANNEXURE-I: SAMPLE FORMAT FOR AFFIDAVIT
@@ -453,7 +714,7 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 no-print">
             <button
               onClick={onBackToDpr}
               className="px-3.5 py-2 bg-white hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition cursor-pointer"
@@ -481,6 +742,70 @@ export const Mar1111TenderDocumentView: React.FC<Mar1111TenderDocumentViewProps>
           </div>
         </div>
       </div>
+
+      {/* Dynamic 3-Step Tender Formulation & Publication Loader Modal (Light Theme) */}
+      {isPublishingTender &&
+        createPortal(
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 font-sans animate-in fade-in duration-150">
+            <div className="bg-white text-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in zoom-in-95">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-2xs">
+                    <Send className="w-5 h-5 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                      Publishing Notice Inviting Tender (e-NIT)
+                    </h3>
+                    <p className="text-xs text-slate-500 font-mono">
+                      Corridor: {dpr.roadCode} ({dpr.roadName})
+                    </p>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                  Step {tenderStep} of 3
+                </span>
+              </div>
+
+              {/* Step indicator description */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span className="text-xs font-bold text-slate-900">
+                    {tenderStep === 1 && 'Validating Technical Sanctions & Two-Bid Eligibility Package...'}
+                    {tenderStep === 2 && 'Formulating Official Notice Inviting Tender (e-NIT)...'}
+                    {tenderStep === 3 && 'Transmitting Live to West Bengal e-Tender Portal (wbtenders.gov.in)...'}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 pl-7 leading-relaxed">
+                  {tenderStep === 1 &&
+                    'Verifying statutory ₹28,20,000 project sanction, 2% Earnest Money Deposit (₹56,400), and Class-I/II WB PWD contractor credential checks.'}
+                  {tenderStep === 2 &&
+                    'Generating statutory Tender Document No. 01/EE(R&B)/NKDA/2026-27, 21-day bid timeline, technical criteria, and mandatory affidavit forms.'}
+                  {tenderStep === 3 &&
+                    'Transmitting cryptographically signed tender package to wbtenders.gov.in state e-Procurement repository with Chief Engineer token approval.'}
+                </p>
+              </div>
+
+              {/* Visual Progress Bar */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-mono text-slate-500">
+                  <span>Publication Progress</span>
+                  <span className="text-emerald-600 font-bold">
+                    {tenderStep === 1 ? '33%' : tenderStep === 2 ? '66%' : '100%'}
+                  </span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                  <div
+                    className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 h-full transition-all duration-500 rounded-full shadow-2xs"
+                    style={{ width: `${(tenderStep / 3) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

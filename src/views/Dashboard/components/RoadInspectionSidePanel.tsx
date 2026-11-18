@@ -56,7 +56,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
 
   // Helper functions for initial NSV status per road
   const getInitialNsvUploaded = (code: string) => {
-    const isMar = code === 'MAR-1111' || code.includes('1111');
+    const isMar = (code === 'MAR-1111' || code.includes('1111')) && localStorage.getItem('nsv_uploaded_MAR-1111') !== 'false';
     const saved = localStorage.getItem(`nsv_uploaded_${code}`);
     if (saved !== null) return saved === 'true';
     return isMar;
@@ -109,9 +109,12 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
   };
 
   const isMar1111 = survey.roadCode === 'MAR-1111' || survey.roadCode.includes('1111');
-  const isFullPipeline = survey.pipelineTier === 'full_pipeline';
-  const isDroneOnly = survey.pipelineTier === 'drone_only';
   const isPendingDrone = survey.pipelineTier === 'pending_drone';
+
+  // Unified single source of truth for NSV presence
+  const hasNsvSurvey = isNsvUploaded || (isMar1111 && localStorage.getItem('nsv_uploaded_MAR-1111') !== 'false');
+  const isFullPipeline = isMar1111;
+  const isDroneOnly = !hasNsvSurvey && !isPendingDrone;
 
   // Dynamically obtain verified potholes for this specific corridor
   const potholesList: GisPothole[] = getCorridorPotholes(survey);
@@ -168,13 +171,15 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
               )}
               <span className="text-base font-extrabold text-slate-900">{survey.roadCode}</span>
 
-              {isFullPipeline && (
-                <span className="text-xs px-2 py-0.5 rounded-full font-bold uppercase bg-red-100 text-[#c5221f] border border-red-300">
-                  Critical Priority • 4 Potholes
+              {hasNsvSurvey ? (
+                <span className="text-xs px-2 py-0.5 rounded-full font-bold uppercase bg-emerald-100 text-[#137333] border border-emerald-300">
+                  NSV Survey Ingested
                 </span>
-              )}
-
-              {isDroneOnly && (
+              ) : isPendingDrone ? (
+                <span className="text-xs px-2 py-0.5 rounded-full font-bold uppercase bg-amber-100 text-[#b06000] border border-amber-300">
+                  No Drone Survey Performed Yet
+                </span>
+              ) : (
                 <>
                   <span className="text-xs px-2 py-0.5 rounded-full font-bold uppercase bg-blue-100 text-[#1a73e8] border border-blue-200">
                     Drone Done
@@ -183,12 +188,6 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
                     No NSV Survey
                   </span>
                 </>
-              )}
-
-              {isPendingDrone && (
-                <span className="text-xs px-2 py-0.5 rounded-full font-bold uppercase bg-amber-100 text-[#b06000] border border-amber-300">
-                  No Drone Survey Performed Yet
-                </span>
               )}
 
               <span className="text-xs px-2 py-0.5 rounded font-semibold bg-blue-50 text-[#1a73e8] border border-blue-200">
@@ -219,7 +218,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
         </div>
 
         {/* Status Callout Banner */}
-        {isPendingDrone && (
+        {isPendingDrone ? (
           <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-amber-900">
               <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
@@ -229,21 +228,34 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
               Autonomous aerial patrol mission is queued for this corridor. No drone flight footage, thermography scans, or AI pothole telemetry have been recorded yet.
             </p>
           </div>
-        )}
-
-        {isDroneOnly && (
-          <div className="p-2.5 bg-blue-50/70 border border-blue-200 rounded-lg text-xs space-y-1">
+        ) : !hasNsvSurvey ? (
+          <div className="p-2.5 bg-amber-50/80 border border-amber-200 rounded-lg text-xs space-y-1">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 font-bold text-blue-900">
+              <div className="flex items-center gap-1.5 font-bold text-amber-900">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Drone Survey Completed • 5 Potholes Verified</span>
+                <span>Drone Survey Completed • {potholesList.length} Potholes Verified</span>
               </div>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
                 NSV Pending
               </span>
             </div>
-            <p className="text-[11px] text-blue-800 leading-relaxed">
-              High-resolution drone video &amp; orthophoto scans are available below. <strong>No NSV Survey has been performed yet</strong> on this corridor (Laser profilometer &amp; DPR pending).
+            <p className="text-[11px] text-amber-800 leading-relaxed">
+              High-resolution drone video &amp; orthophoto scans are available below. <strong>No NSV Survey has been performed yet</strong> on this corridor. Upload certified NSV Report PDF to extract Laser Profilometer IRI &amp; rutting data.
+            </p>
+          </div>
+        ) : (
+          <div className="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-lg text-xs space-y-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 font-bold text-emerald-900">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span>Certified NSV Survey Report Ingested</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
+                Telemetry Active
+              </span>
+            </div>
+            <p className="text-[11px] text-emerald-800 leading-relaxed">
+              Laser profilometer roughness (IRI) and rutting telemetry verified. Corridor is ready for statutory DPR formulation &amp; e-NIT tender release.
             </p>
           </div>
         )}
@@ -306,42 +318,6 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
             </div>
           </div>
         )}
-
-        {/* Corridor Specifications & Pavement Structure Summary */}
-        {isFullPipeline && (
-          <div className="p-2.5 bg-slate-50 rounded-lg text-slate-800 text-[11px] border border-slate-200 space-y-1.5 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-900 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-[#1a73e8]" />
-                Road Specifications &amp; Defect Summary
-              </span>
-              <button
-                onClick={() => setActiveMediaTab('project_info')}
-                className="text-[10px] text-[#1a73e8] hover:underline font-bold cursor-pointer"
-              >
-                View Full Specs →
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              <div className="bg-white p-1.5 rounded border border-slate-200">
-                <span className="text-slate-400 block text-[9px]">Road Classification</span>
-                <span className="font-semibold text-slate-800">Divided 6-Lane Major Arterial</span>
-              </div>
-              <div className="bg-white p-1.5 rounded border border-slate-200">
-                <span className="text-slate-400 block text-[9px]">Authority</span>
-                <span className="font-semibold text-slate-800">NKDA (West Bengal)</span>
-              </div>
-              <div className="bg-white p-1.5 rounded border border-slate-200">
-                <span className="text-slate-400 block text-[9px]">Verified Potholes</span>
-                <span className="font-bold text-red-600">4 Nos. (20 sq ft / 1.86 m²)</span>
-              </div>
-              <div className="bg-white p-1.5 rounded border border-slate-200">
-                <span className="text-slate-400 block text-[9px]">Avg Rut Depth &amp; Void</span>
-                <span className="font-bold text-slate-800">20 mm (0.0372 m³ total)</span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Media View Mode Selector Tabs: Drone Specifications First, Road Specs Last */}
@@ -384,7 +360,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
       </div>
 
       {/* Media View Tab Content */}
-      <div className="p-3.5 flex-1 overflow-y-auto space-y-3">
+      <div className="p-3.5 flex-1 overflow-y-auto space-y-3 custom-scrollbar">
         {/* 0. ROAD SPECIFICATIONS & PAVEMENT STRUCTURE (CLEAN NATIVE UI) */}
         {activeMediaTab === 'project_info' && (
           <div className="space-y-3 text-xs">
@@ -638,7 +614,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
           </button>
         )}
 
-        {/* Secondary Action Grid: NSV Details & DPR */}
+        {/* Secondary Action Grid: NSV Details & DPR - Strictly Gated by hasNsvSurvey */}
         <div className="grid grid-cols-2 gap-2">
           {/* Left Secondary Button: NSV Upload / View */}
           {isPendingDrone ? (
@@ -650,7 +626,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
               <Eye className="w-3.5 h-3.5 text-slate-400" />
               <span>NSV Unavailable (No Drone)</span>
             </button>
-          ) : !isNsvUploaded ? (
+          ) : !hasNsvSurvey ? (
             <button
               onClick={() => setShowUploadNsvModal(true)}
               className="py-1.5 px-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-98"
@@ -681,7 +657,7 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
               <Lock className="w-3.5 h-3.5 text-slate-400" />
               <span>DPR Blocked (No Drone)</span>
             </button>
-          ) : !isNsvUploaded ? (
+          ) : !hasNsvSurvey ? (
             <button
               disabled
               className="py-1.5 px-2 bg-slate-100 text-slate-400 border border-slate-200 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 cursor-not-allowed opacity-60"
@@ -693,10 +669,10 @@ export const RoadInspectionSidePanel: React.FC<RoadInspectionSidePanelProps> = (
           ) : (
             <button
               onClick={() => navigate(`/dpr/${survey.roadCode}`)}
-              className="py-1.5 px-2 bg-red-50 hover:bg-red-100 text-red-800 border border-red-300 text-xs font-bold rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-98"
-              title="Generate MoRTH Detailed Project Report & Release Tender"
+              className="py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-600 text-xs font-bold rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-98"
+              title="Generate or view Detailed Project Report & Tender Document"
             >
-              <FileText className="w-3.5 h-3.5 text-red-600" />
+              <FileText className="w-3.5 h-3.5 text-white" />
               <span>Generate DPR &amp; Tender</span>
             </button>
           )}

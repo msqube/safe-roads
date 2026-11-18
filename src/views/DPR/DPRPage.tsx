@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FormPageHeader } from '../../common/FormPageHeader';
 import { GenericButton } from '../../common/GenericButton';
@@ -79,11 +80,37 @@ export const DPRPage: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Synchronize roadCode from URL
+  // Dynamic 3-step tender publishing loader state for table releases
+  const [isPublishingTenderModal, setIsPublishingTenderModal] = useState<boolean>(false);
+  const [publishingTenderStep, setPublishingTenderStep] = useState<number>(1);
+  const [publishingTargetCode, setPublishingTargetCode] = useState<string>('');
+
+  // Dynamic 3-step tender formulation loader state (when switching to Step 2: Tender Document)
+  const [isFormulatingTenderModal, setIsFormulatingTenderModal] = useState<boolean>(false);
+  const [formulatingTenderStep, setFormulatingTenderStep] = useState<number>(1);
+
+  const handleSwitchToTender = () => {
+    if (mar1111Step === 'tender') return;
+    setIsFormulatingTenderModal(true);
+    setFormulatingTenderStep(1);
+    setTimeout(() => setFormulatingTenderStep(2), 500);
+    setTimeout(() => setFormulatingTenderStep(3), 1000);
+    setTimeout(() => {
+      setIsFormulatingTenderModal(false);
+      setMar1111Step('tender');
+      showToast(`Statutory Tender Document (e-NIT) formulated for ${activeRecord?.roadCode || selectedRoadCode}!`);
+    }, 1500);
+  };
+
+  // Synchronize roadCode from URL & check for fresh DPR arrival notification
   useEffect(() => {
     if (urlRoadCode) {
       setSelectedRoadCode(urlRoadCode);
       setViewMode('document');
+    }
+    if (sessionStorage.getItem('dpr_just_generated') === 'true') {
+      sessionStorage.removeItem('dpr_just_generated');
+      showToast(`Detailed Project Report (DPR) successfully formulated and certified for ${urlRoadCode || 'MAR-1111'}!`);
     }
   }, [urlRoadCode]);
 
@@ -371,17 +398,28 @@ export const DPRPage: React.FC = () => {
   const handleReleaseTender = async (targetRoadCode?: string) => {
     const code = targetRoadCode || dpr?.roadCode;
     if (!code) return;
-    try {
-      const updated = await dprService.releaseTender(code);
-      if (dpr && dpr.roadCode === code) {
-        setDpr(updated);
+    setPublishingTargetCode(code);
+    setIsPublishingTenderModal(true);
+    setPublishingTenderStep(1);
+
+    setTimeout(() => setPublishingTenderStep(2), 550);
+    setTimeout(() => setPublishingTenderStep(3), 1100);
+
+    setTimeout(async () => {
+      try {
+        const updated = await dprService.releaseTender(code);
+        if (dpr && dpr.roadCode === code) {
+          setDpr(updated);
+        }
+        setDprList((prev) => prev.map((item) => (item.roadCode === code ? updated : item)));
+        setIsPublishingTenderModal(false);
+        setTenderModalRecord(updated);
+        showToast(`Notice Inviting Tender (${updated.tender?.nitNumber}) published live to wbtenders.gov.in!`);
+      } catch (e) {
+        console.error(e);
+        setIsPublishingTenderModal(false);
       }
-      setDprList((prev) => prev.map((item) => (item.roadCode === code ? updated : item)));
-      setTenderModalRecord(updated);
-      showToast(`Notice Inviting Tender (${updated.tender?.nitNumber}) published to wbtenders.gov.in!`);
-    } catch (e) {
-      console.error(e);
-    }
+    }, 1650);
   };
 
   // Select Road to view Document
@@ -418,7 +456,7 @@ export const DPRPage: React.FC = () => {
   const contingencyAmount = Math.round(subTotalBOQ * 0.03);
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-12">
+    <div className="space-y-6 w-full pb-12 font-sans">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-5 right-5 z-50 p-3 bg-white border border-slate-300 rounded-lg shadow-lg text-xs font-semibold text-slate-800 flex items-center gap-2 animate-in fade-in">
@@ -426,6 +464,134 @@ export const DPRPage: React.FC = () => {
           <span>{toastMessage}</span>
         </div>
       )}
+
+      {/* Dynamic 3-Step Tender Formulation Modal (Light Theme) */}
+      {isFormulatingTenderModal &&
+        createPortal(
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 font-sans animate-in fade-in duration-150">
+            <div className="bg-white text-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in zoom-in-95">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-2xs">
+                    <ShieldCheck className="w-5 h-5 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                      Generating Statutory Tender Document (e-NIT)
+                    </h3>
+                    <p className="text-xs text-slate-500 font-mono">
+                      Corridor: {activeRecord?.roadCode || selectedRoadCode} ({activeRecord?.roadName || 'Road Corridor'})
+                    </p>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                  Step {formulatingTenderStep} of 3
+                </span>
+              </div>
+
+              {/* Step indicator description */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span className="text-xs font-bold text-slate-900">
+                    {formulatingTenderStep === 1 && 'Extracting DPR Technical Sanctions & Cost Formulation (₹28.20L)...'}
+                    {formulatingTenderStep === 2 && 'Formulating Official Notice Inviting Tender (e-NIT) & ITB Criteria...'}
+                    {formulatingTenderStep === 3 && 'Generating 4-Page Statutory Bidding Package & Affidavit Forms...'}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 pl-7 leading-relaxed">
+                  {formulatingTenderStep === 1 &&
+                    'Synchronizing Part 1 Pothole Repairs (₹3,72,000) and Part 2 BC Resurfacing (₹24,48,000) with 2% EMD (₹56,400).'}
+                  {formulatingTenderStep === 2 &&
+                    'Drafting WB PWD e-NIT No. 01/EE(R&B)/NKDA/2026-27 with 21-day bidding timeline and Class-I/II credential requirements.'}
+                  {formulatingTenderStep === 3 &&
+                    'Assembling official two-bid submission package, Form-III bidder declarations, and sample affidavit annexures.'}
+                </p>
+              </div>
+
+              {/* Visual Progress Bar */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-mono text-slate-500">
+                  <span>Formulation Progress</span>
+                  <span className="text-emerald-600 font-bold">
+                    {formulatingTenderStep === 1 ? '33%' : formulatingTenderStep === 2 ? '66%' : '100%'}
+                  </span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                  <div
+                    className="bg-[#34a853] h-full transition-all duration-500 rounded-full shadow-2xs"
+                    style={{ width: `${(formulatingTenderStep / 3) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* Tender Publication 3-Step Animated Modal (Light Theme) */}
+      {isPublishingTenderModal &&
+        createPortal(
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 font-sans animate-in fade-in duration-150">
+            <div className="bg-white text-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in zoom-in-95">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-2xs">
+                    <Send className="w-5 h-5 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                      Publishing Notice Inviting Tender (e-NIT)
+                    </h3>
+                    <p className="text-xs text-slate-500 font-mono">
+                      Corridor: {publishingTargetCode || selectedRoadCode}
+                    </p>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                  Step {publishingTenderStep} of 3
+                </span>
+              </div>
+
+              {/* Step indicator description */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  <span className="text-xs font-bold text-slate-900">
+                    {publishingTenderStep === 1 && 'Validating Technical Sanctions & Two-Bid Eligibility Package...'}
+                    {publishingTenderStep === 2 && 'Formulating Official Notice Inviting Tender (e-NIT)...'}
+                    {publishingTenderStep === 3 && 'Transmitting Live to West Bengal e-Tender Portal (wbtenders.gov.in)...'}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 pl-7 leading-relaxed">
+                  {publishingTenderStep === 1 &&
+                    'Verifying statutory project sanction, 2% Earnest Money Deposit, and Class-I/II WB PWD contractor credential checks.'}
+                  {publishingTenderStep === 2 &&
+                    'Generating statutory Tender Document, 21-day bid timeline, technical criteria, and mandatory affidavit forms.'}
+                  {publishingTenderStep === 3 &&
+                    'Transmitting cryptographically signed tender package to wbtenders.gov.in state e-Procurement repository.'}
+                </p>
+              </div>
+
+              {/* Visual Progress Bar */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-mono text-slate-500">
+                  <span>Publication Progress</span>
+                  <span className="text-emerald-600 font-bold">
+                    {publishingTenderStep === 1 ? '33%' : publishingTenderStep === 2 ? '66%' : '100%'}
+                  </span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                  <div
+                    className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 h-full transition-all duration-500 rounded-full shadow-2xs"
+                    style={{ width: `${(publishingTenderStep / 3) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
 
       {/* Tender Notice Modal */}
       {tenderModalRecord && (
@@ -436,8 +602,8 @@ export const DPRPage: React.FC = () => {
         />
       )}
 
-      {/* Mode Switcher Tab Bar */}
-      <div className="bg-white p-2 border border-slate-200 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Mode Switcher Tab Bar - Equal Padding p-3.5 */}
+      <div className="bg-white p-3.5 border border-slate-200 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
             onClick={handleBackToTable}
@@ -503,10 +669,16 @@ export const DPRPage: React.FC = () => {
       {/* VIEW MODE 2: Official DPR Document (WB PWD Format) */}
       {viewMode === 'document' && activeRecord && (
         <div className="space-y-6">
-          {activeRecord.roadCode === 'MAR-1111' ? (
+          {(activeRecord.roadCode === 'MAR-1111' ||
+            localStorage.getItem(`nsv_uploaded_${activeRecord.roadCode}`) === 'true' ||
+            localStorage.getItem(`dpr_approved_${activeRecord.roadCode}`) === 'true' ||
+            localStorage.getItem(`nsv_uploaded_${selectedRoadCode}`) === 'true' ||
+            localStorage.getItem(`dpr_approved_${selectedRoadCode}`) === 'true' ||
+            activeRecord.hasNsvSurvey ||
+            activeRecord.roadCode.includes('1111')) ? (
             <div className="space-y-4">
-              {/* Step Navigation Bar for MAR 1111 */}
-              <div className="bg-white p-2 border border-slate-200 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              {/* Step Navigation Bar for Active Road - Equal Padding p-3.5 */}
+              <div className="bg-white p-3.5 border border-slate-200 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setMar1111Step('dpr')}
@@ -518,17 +690,10 @@ export const DPRPage: React.FC = () => {
                   >
                     <FileText className="w-4 h-4" />
                     <span>Step 1: Detailed Project Report (DPR)</span>
-                    <span
-                      className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                        mar1111Step === 'dpr' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-                      }`}
-                    >
-                      15 Sec
-                    </span>
                   </button>
 
                   <button
-                    onClick={() => setMar1111Step('tender')}
+                    onClick={handleSwitchToTender}
                     className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
                       mar1111Step === 'tender'
                         ? 'bg-[#34a853] text-white shadow-xs'
@@ -537,28 +702,15 @@ export const DPRPage: React.FC = () => {
                   >
                     <ShieldCheck className="w-4 h-4" />
                     <span>Step 2: Tender Document</span>
-                    <span
-                      className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                        mar1111Step === 'tender' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
-                      }`}
-                    >
-                      7 Pgs
-                    </span>
                   </button>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs">
                   <button
-                    onClick={() => navigate('/nsv/MAR-1111')}
+                    onClick={() => navigate(`/nsv/${activeRecord.roadCode}`)}
                     className="px-2.5 py-1 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
                   >
                     &larr; Back to NSV Details
-                  </button>
-                  <button
-                    onClick={handleBackToTable}
-                    className="px-2.5 py-1 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded text-xs font-semibold cursor-pointer"
-                  >
-                    Register Table
                   </button>
                 </div>
               </div>
@@ -567,15 +719,15 @@ export const DPRPage: React.FC = () => {
               {mar1111Step === 'dpr' ? (
                 <Mar1111DprDocumentView
                   dpr={activeRecord}
-                  onProceedToTender={() => setMar1111Step('tender')}
+                  onProceedToTender={handleSwitchToTender}
                 />
               ) : (
                 <Mar1111TenderDocumentView
                   dpr={activeRecord}
                   onBackToDpr={() => setMar1111Step('dpr')}
                   onPublishSuccess={() => {
-                    handleReleaseTender('MAR-1111');
-                    showToast('e-NIT No. 01/EE(R&B)/NKDA/2026-27 published to wbtenders.gov.in!');
+                    handleReleaseTender(activeRecord.roadCode);
+                    showToast(`Notice Inviting Tender published to wbtenders.gov.in for ${activeRecord.roadCode}!`);
                   }}
                 />
               )}

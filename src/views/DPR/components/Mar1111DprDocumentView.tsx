@@ -18,8 +18,11 @@ import {
   RotateCcw,
   Plus,
   Trash2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { DPRRecord } from '../../../models/dprModels';
+import { WorkflowPipelineTrail } from '../../../common/WorkflowPipelineTrail';
 
 export interface DprMar1111Data {
   executiveSummary: {
@@ -260,6 +263,11 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
   const [tempData, setTempData] = useState<DprMar1111Data>(data);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Carousel & Document Viewer State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [docViewMode, setDocViewMode] = useState<'carousel' | 'all'>('carousel');
+  const totalPages = 5;
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem(storageKey);
@@ -319,12 +327,24 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
         </div>
       )}
 
+      {/* Modern Workflow Pipeline Trail: Step 3 Active (Compact Ribbon) */}
+      <WorkflowPipelineTrail
+        currentStep={3}
+        roadCode={dpr.roadCode}
+        roadName={dpr.roadName}
+        compact={true}
+      />
+
       {/* Top Flow Header */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 rounded-xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 rounded-xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 no-print">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40">
               STEP 1 OF 2: DETAILED PROJECT REPORT (DPR)
+            </span>
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              <span>DPR STATUS: APPROVED &amp; SANCTIONED</span>
             </span>
             <span className="text-xs text-slate-300 font-mono">Road NKDA MAR 1111</span>
           </div>
@@ -354,19 +374,124 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
             <span>Print DPR</span>
           </button>
 
-          {/* Standardized Button Name: Proceed to Step 2: Tender Document */}
+          {/* Standardized Button Name: Proceed to Tender Document */}
           <button
             onClick={onProceedToTender}
             className="px-4 py-2 bg-[#34a853] hover:bg-[#2d9247] text-white text-xs font-bold rounded-lg shadow-md transition cursor-pointer flex items-center gap-2 active:scale-98"
           >
-            <span>Proceed to Step 2: Tender Document</span>
+            <span>Proceed to Tender Document</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Main DPR Document Body */}
-      <div className="bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed">
+      {/* PDF Page Navigation & Carousel Toolbar */}
+      <div className="bg-white p-3.5 border border-slate-200 rounded-xl shadow-xs flex flex-col md:flex-row items-center justify-between gap-3 no-print">
+        {/* Left: Prev / Current Page / Next */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className={`p-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 transition ${
+              currentPage === 1
+                ? 'text-slate-300 border-slate-200 cursor-not-allowed'
+                : 'text-slate-700 border-slate-300 hover:bg-slate-100 cursor-pointer'
+            }`}
+            title="Previous Page"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Prev Page</span>
+          </button>
+
+          <div className="px-3 py-1 bg-slate-100 border border-slate-200 rounded-lg text-xs font-mono font-bold text-slate-800">
+            Page {currentPage} of {totalPages}
+          </div>
+
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className={`p-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 transition ${
+              currentPage === totalPages
+                ? 'text-slate-300 border-slate-200 cursor-not-allowed'
+                : 'text-slate-700 border-slate-300 hover:bg-slate-100 cursor-pointer'
+            }`}
+            title="Next Page"
+          >
+            <span className="hidden sm:inline">Next Page</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Center: Quick Page Jump Pills */}
+        <div className="flex items-center gap-1 overflow-x-auto max-w-full pb-1 md:pb-0">
+          {[
+            { num: 1, label: 'Page 1: Summary' },
+            { num: 2, label: 'Page 2: Scope & Tech' },
+            { num: 3, label: 'Page 3: Cost BoQ' },
+            { num: 4, label: 'Page 4: Plan & QA' },
+            { num: 5, label: 'Page 5: Sanctions' },
+          ].map((tab) => (
+            <button
+              key={tab.num}
+              onClick={() => {
+                setCurrentPage(tab.num);
+                if (docViewMode === 'all') setDocViewMode('carousel');
+              }}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition cursor-pointer whitespace-nowrap ${
+                currentPage === tab.num && docViewMode === 'carousel'
+                  ? 'bg-[#1a73e8] text-white shadow-2xs'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Right: View Mode Toggle & Print */}
+        <div className="flex items-center gap-2">
+          <div className="bg-slate-100 p-0.5 rounded-lg border border-slate-200 flex items-center text-xs">
+            <button
+              onClick={() => setDocViewMode('carousel')}
+              className={`px-2 py-1 rounded-md font-semibold transition cursor-pointer ${
+                docViewMode === 'carousel'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Page View
+            </button>
+            <button
+              onClick={() => setDocViewMode('all')}
+              className={`px-2 py-1 rounded-md font-semibold transition cursor-pointer ${
+                docViewMode === 'all'
+                  ? 'bg-white text-slate-900 shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              All Pages
+            </button>
+          </div>
+
+          <button
+            onClick={() => window.print()}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Print all pages sequentially as official PDF"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print (PDF)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 1: TITLE & EXECUTIVE SUMMARY (SECTIONS 1 TO 3)                       */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 1 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed mb-6`}
+      >
         {/* Document Header Band */}
         <div className="p-6 bg-slate-50 border-b border-slate-200 text-center space-y-2">
           <div className="text-xs uppercase tracking-widest font-bold text-slate-500">
@@ -780,7 +905,40 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
               </ul>
             )}
           </div>
+        </div>
 
+        {/* Page 1 Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-mono no-print">
+          <div>Ref: NKDA/ENG/2026/DPR-1111/R2 • Page 1 of 5</div>
+          <button
+            onClick={() => setCurrentPage(2)}
+            className="px-3.5 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold rounded-lg transition cursor-pointer flex items-center gap-1 shadow-2xs"
+          >
+            <span>Page 2: Scope &amp; Tech</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 2: INVENTORY, SCOPE & TECHNICAL APPROACH (SECTIONS 4 TO 6)           */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 2 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed mb-6`}
+      >
+        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="font-bold text-slate-800">
+            WEST BENGAL URBAN INFRASTRUCTURE • DPR: ROAD NKDA MAR 1111
+          </div>
+          <div className="flex items-center gap-3 text-slate-500">
+            <span>Ref: NKDA/ENG/2026/DPR-1111/R2</span>
+            <span className="font-bold text-[#1a73e8] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">PAGE 2 OF 5</span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 space-y-8">
           {/* 4. SCOPE OF WORK */}
           <div className="space-y-2">
             <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
@@ -1097,10 +1255,91 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
                     {data.technicalApproach.qualityControl}
                   </div>
                 </div>
+
+                {/* 6.1 Flexible Bituminous Pavement Materials Specifications */}
+                <div className="p-3 bg-blue-50/60 border border-blue-200 rounded-lg space-y-2 mt-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Materials Used to Build Road (Flexible Bituminous Pavement):</span>
+                    </span>
+                    <span className="text-[10px] font-mono text-blue-800 bg-white px-2 py-0.5 rounded border border-blue-200 font-semibold">
+                      MoRTH Section 500 / IRC:37 Specification
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-[11px]">
+                    <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+                      <span className="text-red-700 font-bold block text-[10px] uppercase">1. Wearing Course (40mm)</span>
+                      <p className="text-slate-800 font-semibold">Bituminous Concrete (BC-1)</p>
+                      <p className="text-slate-500 text-[10px]">PMB-40 Polymer Modified Bitumen for high shear resistance</p>
+                    </div>
+
+                    <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+                      <span className="text-amber-700 font-bold block text-[10px] uppercase">2. Binder Course (50mm)</span>
+                      <p className="text-slate-800 font-semibold">Dense Bituminous Macadam (DBM-II)</p>
+                      <p className="text-slate-500 text-[10px]">VG-30/VG-40 heavy axle load distribution across wheelpaths</p>
+                    </div>
+
+                    <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+                      <span className="text-blue-700 font-bold block text-[10px] uppercase">3. Base Course (250mm)</span>
+                      <p className="text-slate-800 font-semibold">Wet Mix Macadam (WMM Base)</p>
+                      <p className="text-slate-500 text-[10px]">Mechanically crushed graded aggregate compacted at OMC</p>
+                    </div>
+
+                    <div className="p-2.5 bg-white rounded border border-slate-200 space-y-0.5">
+                      <span className="text-emerald-700 font-bold block text-[10px] uppercase">4. Sub-Base (200mm)</span>
+                      <p className="text-slate-800 font-semibold">Granular Sub-Base (GSB-1)</p>
+                      <p className="text-slate-500 text-[10px]">Interlayer drainage over subgrade + RS-1 Tack Coat (0.25 kg/m²)</p>
+                    </div>
+                  </div>
+                </div>
               </>
             )}
           </div>
+        </div>
 
+        {/* Page 2 Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-mono no-print">
+          <div>Ref: NKDA/ENG/2026/DPR-1111/R2 • Page 2 of 5</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(1)}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Page 1</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage(3)}
+              className="px-3.5 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold rounded-lg transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <span>Page 3: Cost BoQ</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 3: STATUTORY BILL OF QUANTITIES & COST ESTIMATES (SECTION 7)          */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 3 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed mb-6`}
+      >
+        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="font-bold text-slate-800">
+            WEST BENGAL URBAN INFRASTRUCTURE • DPR: ROAD NKDA MAR 1111
+          </div>
+          <div className="flex items-center gap-3 text-slate-500">
+            <span>Ref: NKDA/ENG/2026/DPR-1111/R2</span>
+            <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">PAGE 3 OF 5</span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 space-y-8">
           {/* 7. COST ESTIMATE */}
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
@@ -1255,7 +1494,49 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
               </>
             )}
           </div>
+        </div>
 
+        {/* Page 3 Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-mono no-print">
+          <div>Ref: NKDA/ENG/2026/DPR-1111/R2 • Page 3 of 5</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(2)}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Page 2</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage(4)}
+              className="px-3.5 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold rounded-lg transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <span>Page 4: Plan &amp; QA</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 4: IMPLEMENTATION PLAN, QA/QC & ENVIRONMENTAL SAFETY (SECTIONS 8-11)  */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 4 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed mb-6`}
+      >
+        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="font-bold text-slate-800">
+            WEST BENGAL URBAN INFRASTRUCTURE • DPR: ROAD NKDA MAR 1111
+          </div>
+          <div className="flex items-center gap-3 text-slate-500">
+            <span>Ref: NKDA/ENG/2026/DPR-1111/R2</span>
+            <span className="font-bold text-[#1a73e8] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">PAGE 4 OF 5</span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 space-y-8">
           {/* 8. IMPLEMENTATION PLAN */}
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
@@ -1467,7 +1748,49 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
               </div>
             )}
           </div>
+        </div>
 
+        {/* Page 4 Footer */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-mono no-print">
+          <div>Ref: NKDA/ENG/2026/DPR-1111/R2 • Page 4 of 5</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(3)}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Page 3</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage(5)}
+              className="px-3.5 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold rounded-lg transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <span>Page 5: Sanctions</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* PAGE 5: RISK MATRIX, STATUTORY APPROVALS & SANCTION ORDER (SECTIONS 12-15) */}
+      {/* ========================================================================= */}
+      <div
+        className={`${
+          docViewMode === 'all' || currentPage === 5 ? 'block' : 'hidden print:block'
+        } pdf-page-sheet bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden text-xs text-slate-800 leading-relaxed mb-6`}
+      >
+        <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+          <div className="font-bold text-slate-800">
+            WEST BENGAL URBAN INFRASTRUCTURE • DPR: ROAD NKDA MAR 1111
+          </div>
+          <div className="flex items-center gap-3 text-slate-500">
+            <span>Ref: NKDA/ENG/2026/DPR-1111/R2</span>
+            <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">PAGE 5 OF 5</span>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 space-y-8">
           {/* 12. RISK ASSESSMENT TABLE */}
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
@@ -1647,13 +1970,23 @@ export const Mar1111DprDocumentView: React.FC<Mar1111DprDocumentViewProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onProceedToTender}
-            className="w-full sm:w-auto px-6 py-2.5 bg-[#34a853] hover:bg-[#2d9247] text-white text-xs font-bold rounded-lg shadow-md transition cursor-pointer flex items-center justify-center gap-2 active:scale-98 whitespace-nowrap"
-          >
-            <span>Proceed to Step 2: Tender Document</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2 no-print">
+            <button
+              onClick={() => setCurrentPage(4)}
+              className="px-3.5 py-2.5 bg-white hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Page 4</span>
+            </button>
+
+            <button
+              onClick={onProceedToTender}
+              className="px-6 py-2.5 bg-[#34a853] hover:bg-[#2d9247] text-white text-xs font-bold rounded-lg shadow-md transition cursor-pointer flex items-center justify-center gap-2 active:scale-98 whitespace-nowrap"
+            >
+              <span>Proceed to Tender Document</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

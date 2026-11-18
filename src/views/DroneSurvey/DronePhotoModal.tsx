@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GenericModal } from '../../common/GenericModal';
 import { GenericButton } from '../../common/GenericButton';
 import { DroneSurveyRecord } from '../../models/surveyModels';
-import { Camera, ExternalLink, Layers, Eye } from 'lucide-react';
+import { Camera, ExternalLink, Layers, Eye, Upload } from 'lucide-react';
 
 interface DronePhotoModalProps {
   isOpen: boolean;
@@ -21,6 +21,11 @@ export const DronePhotoModal: React.FC<DronePhotoModalProps> = ({
 
   if (!record) return null;
 
+  const isUploaded =
+    (record.roadCode === 'MAR-1111' || record.roadCode.includes('1111')) && localStorage.getItem('nsv_uploaded_MAR-1111') !== 'false'
+      ? true
+      : localStorage.getItem(`nsv_uploaded_${record.roadCode}`) === 'true';
+
   return (
     <GenericModal
       isOpen={isOpen}
@@ -38,17 +43,31 @@ export const DronePhotoModal: React.FC<DronePhotoModalProps> = ({
           <GenericButton variant="secondary" size="sm" onClick={onClose}>
             Close
           </GenericButton>
-          <GenericButton
-            variant="primary"
-            size="sm"
-            onClick={() => {
-              onClose();
-              onViewNSV(record.roadCode);
-            }}
-            rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
-          >
-            View NSV Details
-          </GenericButton>
+          {!isUploaded ? (
+            <GenericButton
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                onClose();
+                onViewNSV(record.roadCode);
+              }}
+              leftIcon={<Upload className="w-3.5 h-3.5 text-amber-600" />}
+            >
+              Upload NSV Report
+            </GenericButton>
+          ) : (
+            <GenericButton
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                onClose();
+                onViewNSV(record.roadCode);
+              }}
+              rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
+            >
+              View NSV Details
+            </GenericButton>
+          )}
         </>
       }
     >

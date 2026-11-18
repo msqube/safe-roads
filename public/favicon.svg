@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e40af" />
+      <stop offset="50%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="roadGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+
+  <!-- Circular Base Shield with drop-shadow effect -->
+  <circle cx="32" cy="32" r="30" fill="url(#shieldGrad)" stroke="#38bdf8" stroke-width="2.5" />
+
+  <!-- Road Carriageway (Perspective converging towards horizon) -->
+  <path d="M26 18 L38 18 L46 50 L18 50 Z" fill="url(#roadGrad)" stroke="#64748b" stroke-width="1" />
+
+  <!-- Road Center Dashed Line (Vibrant Highway Yellow) -->
+  <line x1="32" y1="21" x2="32" y2="27" stroke="#facc15" stroke-width="2" stroke-linecap="round" />
+  <line x1="32" y1="31" x2="32" y2="39" stroke="#facc15" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="32" y1="43" x2="32" y2="48" stroke="#facc15" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Road Curbs (White Highway Shoulder Lines) -->
+  <line x1="26" y1="18" x2="18" y2="50" stroke="#f8fafc" stroke-width="1.5" stroke-linecap="round" />
+  <line x1="38" y1="18" x2="46" y2="50" stroke="#f8fafc" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- Drone / Satellite Surveillance Beacon Indicator -->
+  <circle cx="32" cy="14" r="4.5" fill="url(#glowGrad)" stroke="#ffffff" stroke-width="1.5" />
+  <!-- Surveillance Radar Ring -->
+  <path d="M23 14 A9 9 0 0 1 41 14" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3" />
+</svg>

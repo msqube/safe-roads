@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Sparkles,
   ArrowRight,
+  RotateCw,
   Maximize2,
   X,
   Compass,
@@ -75,6 +76,23 @@ export const CivilEngineeringLaneView: React.FC<CivilEngineeringLaneViewProps> =
 
   const [selectedPothole, setSelectedPothole] = useState<GisPothole>(potholesList[0]);
   const [showMediaModal, setShowMediaModal] = useState<boolean>(false);
+
+  // Estimation Generation state - starts reset on page reload as requested
+  const [isEstimating, setIsEstimating] = useState<boolean>(false);
+  const [isEstimationGenerated, setIsEstimationGenerated] = useState<boolean>(false);
+  const [estimationStep, setEstimationStep] = useState<number>(1);
+
+  const handleGenerateEstimation = () => {
+    setIsEstimationGenerated(false);
+    setIsEstimating(true);
+    setEstimationStep(1);
+    setTimeout(() => setEstimationStep(2), 500);
+    setTimeout(() => setEstimationStep(3), 1000);
+    setTimeout(() => {
+      setIsEstimating(false);
+      setIsEstimationGenerated(true);
+    }, 1500);
+  };
 
   // Exact DPR Formula Calculations:
   // Part 1: Filling of Potholes
@@ -488,166 +506,234 @@ export const CivilEngineeringLaneView: React.FC<CivilEngineeringLaneViewProps> =
       </div>
 
       {/* 3. STATUTORY COST ESTIMATION FORMULA BREAKDOWN (INPUTS FEED INTO DPR) */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-xl p-6 shadow-md border border-slate-700 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700 pb-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-slate-950 font-mono">
-                PWD SoR 2022-2025 FORMULAS
-              </span>
-              <h3 className="text-base font-bold tracking-tight">
-                Statutory Repair &amp; Resurfacing Cost Formulation (Road NKDA MAR 1111)
-              </h3>
+      {!isEstimationGenerated ? (
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-xl p-6 shadow-md border border-slate-700 space-y-4 font-sans animate-in fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700 pb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold tracking-tight">
+                  Statutory Repair &amp; Resurfacing Cost Formulation ({details.roadCode})
+                </h3>
+              </div>
+              <p className="text-xs text-slate-300 mt-1">
+                Laser profilometer roughness (IRI 5.20 m/km), 20mm rut depth, and 4 verified potholes (1.86 m²) are verified. Generate statutory BoQ cost estimates to calculate Part 1 &amp; Part 2 figures before proceeding to DPR formulation.
+              </p>
             </div>
-            <p className="text-xs text-slate-300 mt-0.5">
-              Exact statutory calculation based on Schedule of Rates formulas (feeds directly into dynamic DPR generation in the next step). Work comprises two scopes:
-            </p>
+
+            {!isEstimating && (
+              <button
+                onClick={handleGenerateEstimation}
+                className="px-5 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-bold rounded-lg shadow-md transition flex items-center gap-2 cursor-pointer self-start sm:self-auto active:scale-98 animate-pulse whitespace-nowrap"
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>Generate Cost Estimation</span>
+              </button>
+            )}
           </div>
 
-          {onProceedToDpr && (
-            <button
-              onClick={onProceedToDpr}
-              className="px-4 py-2 bg-[#34a853] hover:bg-[#2d9247] text-white text-xs font-bold rounded-lg shadow-md transition flex items-center gap-2 cursor-pointer self-start sm:self-auto"
-            >
-              <FileText className="w-4 h-4" />
-              <span>Proceed to Generate DPR</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+          {/* Dynamic Calculation Loader */}
+          {isEstimating ? (
+            <div className="p-5 bg-slate-950/80 rounded-xl border border-cyan-500/40 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                <div>
+                  <div className="font-bold text-xs text-cyan-300 flex items-center gap-2">
+                    <span>Generating Statutory Cost Estimation...</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-400/20 text-cyan-200">
+                      Step {estimationStep} of 3
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    {estimationStep === 1 && 'Calculating Part 1: Localized Patch Repairs (4 Potholes × 20mm × 0.465 m² × ₹10,000)...'}
+                    {estimationStep === 2 && 'Calculating Part 2: Bituminous Concrete Resurfacing (120m × 7.5m × ₹2,720 SoR Rate)...'}
+                    {estimationStep === 3 && 'Synthesizing Combined Scope & Statutory Sanction Total (₹28,20,000)...'}
+                  </p>
+                </div>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 h-full transition-all duration-500 rounded-full"
+                  style={{ width: `${(estimationStep / 3) * 100}%` }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="p-3.5 bg-slate-800/60 rounded-lg border border-slate-700/60 flex items-center justify-between text-xs text-slate-400">
+              <span>Click <strong>&quot;Generate Cost Estimation&quot;</strong> above to formulate statutory Schedule of Rates items.</span>
+              <span className="font-mono text-[11px] text-amber-300 font-semibold">Pending Formulation</span>
+            </div>
           )}
         </div>
-
-        {/* Two Work Types Side-by-Side Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Work Type 1: Pothole Filling */}
-          <div className="p-4 bg-slate-800/90 rounded-lg border border-slate-700 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                <span className="w-5 h-5 rounded-full bg-amber-400/20 flex items-center justify-center font-bold text-[11px] text-amber-300">
-                  1
-                </span>
-                Part 1: Filling of Potholes (Patching)
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-700 text-slate-300">
-                4 Potholes Verified
-              </span>
+      ) : (
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-xl p-6 shadow-md border border-slate-700 space-y-5 animate-in fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700 pb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold tracking-tight">
+                  Statutory Repair &amp; Resurfacing Cost Formulation (Road NKDA MAR 1111)
+                </h3>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Exact statutory calculation based on Schedule of Rates formulas (feeds directly into dynamic DPR generation in the next step). Work comprises two scopes:
+              </p>
             </div>
 
-            <div className="p-2.5 bg-slate-900 rounded font-mono text-xs text-amber-300 border border-slate-700">
-              <span className="text-slate-400 block text-[10px]">Statutory PWD SoR Formula:</span>
-              <code>Cost = Potholes (N) × Avg Depth × Avg Area × ₹10,000</code>
+            <div className="flex flex-col items-end gap-2 flex-shrink-0 self-start sm:self-auto">
+              <button
+                onClick={handleGenerateEstimation}
+                className="px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg border border-slate-600 transition cursor-pointer flex items-center gap-1.5 shadow-2xs hover:text-white"
+                title="Recalculate statutory formulas"
+              >
+                <RotateCw className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Recalculate</span>
+              </button>
+
+              {onProceedToDpr && (
+                <button
+                  onClick={onProceedToDpr}
+                  className="px-4 py-2 bg-[#34a853] hover:bg-[#2d9247] text-white text-xs font-bold rounded-lg shadow-md transition flex items-center gap-2 cursor-pointer active:scale-98"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Proceed to Generate DPR</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Two Work Types Side-by-Side Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Work Type 1: Pothole Filling */}
+            <div className="p-4 bg-slate-800/90 rounded-lg border border-slate-700 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-amber-400/20 flex items-center justify-center font-bold text-[11px] text-amber-300">
+                    1
+                  </span>
+                  Part 1: Filling of Potholes (Patching)
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-700 text-slate-300">
+                  4 Potholes Verified
+                </span>
+              </div>
+
+              <div className="p-2.5 bg-slate-900 rounded font-mono text-xs text-amber-300 border border-slate-700">
+                <span className="text-slate-400 block text-[10px]">Statutory PWD SoR Formula:</span>
+                <code>Cost = Potholes (N) × Avg Depth × Avg Area × ₹10,000</code>
+              </div>
+
+              <div className="space-y-1 text-xs text-slate-300">
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Number of Potholes (N):</span>
+                  <span className="font-mono font-bold text-white">4 Nos.</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Average Pothole Depth:</span>
+                  <span className="font-mono font-bold text-white">20 mm</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Average Area per Pothole:</span>
+                  <span className="font-mono font-bold text-white">0.465 m² (Total: 1.86 m² / 20 sq ft)</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Patch Infill Volume:</span>
+                  <span className="font-mono text-slate-300">0.0372 m³ (Bituminous Macadam)</span>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-amber-950/40 border border-amber-800/80 rounded flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-amber-300 font-semibold block uppercase">
+                    Part 1 Estimated Cost
+                  </span>
+                  <span className="font-mono text-[10px] text-slate-400">
+                    4 × 20 × 0.465 × ₹10,000
+                  </span>
+                </div>
+                <div className="text-lg font-black text-amber-300 font-mono">
+                  ₹{part1Cost.toLocaleString('en-IN')}
+                  <span className="text-xs font-normal text-amber-200 block text-right">(₹3.72 Lakhs)</span>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-1 text-xs text-slate-300">
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Number of Potholes (N):</span>
-                <span className="font-mono font-bold text-white">4 Nos.</span>
+            {/* Work Type 2: Resurfacing with Bituminous Concrete */}
+            <div className="p-4 bg-slate-800/90 rounded-lg border border-slate-700 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-400/20 flex items-center justify-center font-bold text-[11px] text-emerald-300">
+                    2
+                  </span>
+                  Part 2: Resurfacing with Bituminous Concrete (BC)
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-700 text-slate-300">
+                  120m Resurfacing
+                </span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Average Pothole Depth:</span>
-                <span className="font-mono font-bold text-white">20 mm</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Average Area per Pothole:</span>
-                <span className="font-mono font-bold text-white">0.465 m² (Total: 1.86 m² / 20 sq ft)</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Patch Infill Volume:</span>
-                <span className="font-mono text-slate-300">0.0372 m³ (Bituminous Macadam)</span>
-              </div>
-            </div>
 
-            <div className="p-2.5 bg-amber-950/40 border border-amber-800/80 rounded flex items-center justify-between">
-              <div>
-                <span className="text-[10px] text-amber-300 font-semibold block uppercase">
-                  Part 1 Estimated Cost
-                </span>
-                <span className="font-mono text-[10px] text-slate-400">
-                  4 × 20 × 0.465 × ₹10,000
-                </span>
+              <div className="p-2.5 bg-slate-900 rounded font-mono text-xs text-emerald-300 border border-slate-700">
+                <span className="text-slate-400 block text-[10px]">Statutory PWD SoR Formula:</span>
+                <code>Cost = Length × Avg Depth of Surfacing × Width of Road × ₹30,000</code>
               </div>
-              <div className="text-lg font-black text-amber-300 font-mono">
-                ₹{part1Cost.toLocaleString('en-IN')}
-                <span className="text-xs font-normal text-amber-200 block text-right">(₹3.72 Lakhs)</span>
+
+              <div className="space-y-1 text-xs text-slate-300">
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Corridor Segment Length (L):</span>
+                  <span className="font-mono font-bold text-white">120 meters (Km 0+000 - 0+120)</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Carriageway Width (W):</span>
+                  <span className="font-mono font-bold text-white">7.5 meters (Dual Carriageway)</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Surfacing Specification:</span>
+                  <span className="font-mono font-bold text-white">Length × Avg Depth × Width of Road × ₹30,000</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-700/60">
+                  <span className="text-slate-400">Schedule Rate:</span>
+                  <span className="font-mono text-slate-300">₹30,000 Standard SoR Volumetric Multiplier</span>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-emerald-950/40 border border-emerald-800/80 rounded flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-emerald-300 font-semibold block uppercase">
+                    Part 2 Estimated Cost
+                  </span>
+                  <span className="font-mono text-[10px] text-slate-400">
+                    Length × Avg Depth × Width × ₹30,000
+                  </span>
+                </div>
+                <div className="text-lg font-black text-emerald-300 font-mono">
+                  ₹{part2Cost.toLocaleString('en-IN')}
+                  <span className="text-xs font-normal text-emerald-200 block text-right">(₹24.48 Lakhs)</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Work Type 2: Resurfacing with Bituminous Concrete */}
-          <div className="p-4 bg-slate-800/90 rounded-lg border border-slate-700 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-400/20 flex items-center justify-center font-bold text-[11px] text-emerald-300">
-                  2
-                </span>
-                Part 2: Resurfacing with Bituminous Concrete (BC)
+          {/* Total Summary Strip */}
+          <div className="p-4 bg-slate-950/90 rounded-lg border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="text-xs font-semibold text-slate-300">
+                Total Combined Estimated Amount Put to Tender (120m Corridor Segment):
+              </div>
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                Part 1 (₹3.72 Lakhs) + Part 2 (₹24.48 Lakhs) • Defect Liability: 1 Year • Security Deposit: 10%
+              </div>
+            </div>
+
+            <div className="text-right">
+              <div className="text-2xl font-black text-white font-mono">
+                ₹{totalSegmentCost.toLocaleString('en-IN')}
+              </div>
+              <span className="text-xs text-emerald-400 font-semibold">
+                ₹{totalSegmentLakhs} Lakhs (120m Corridor Segment Sanction)
               </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-700 text-slate-300">
-                120m Resurfacing
-              </span>
-            </div>
-
-            <div className="p-2.5 bg-slate-900 rounded font-mono text-xs text-emerald-300 border border-slate-700">
-              <span className="text-slate-400 block text-[10px]">Statutory PWD SoR Formula:</span>
-              <code>Cost = Length × Avg Depth of Surfacing × Width of Road × ₹30,000</code>
-            </div>
-
-            <div className="space-y-1 text-xs text-slate-300">
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Corridor Segment Length (L):</span>
-                <span className="font-mono font-bold text-white">120 meters (Km 0+000 - 0+120)</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Carriageway Width (W):</span>
-                <span className="font-mono font-bold text-white">7.5 meters (Dual Carriageway)</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Surfacing Specification:</span>
-                <span className="font-mono font-bold text-white">Length × Avg Depth × Width of Road × ₹30,000</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-700/60">
-                <span className="text-slate-400">Schedule Rate:</span>
-                <span className="font-mono text-slate-300">₹30,000 Standard SoR Volumetric Multiplier</span>
-              </div>
-            </div>
-
-            <div className="p-2.5 bg-emerald-950/40 border border-emerald-800/80 rounded flex items-center justify-between">
-              <div>
-                <span className="text-[10px] text-emerald-300 font-semibold block uppercase">
-                  Part 2 Estimated Cost
-                </span>
-                <span className="font-mono text-[10px] text-slate-400">
-                  Length × Avg Depth × Width × ₹30,000
-                </span>
-              </div>
-              <div className="text-lg font-black text-emerald-300 font-mono">
-                ₹{part2Cost.toLocaleString('en-IN')}
-                <span className="text-xs font-normal text-emerald-200 block text-right">(₹24.48 Lakhs)</span>
-              </div>
             </div>
           </div>
         </div>
-
-        {/* Total Summary Strip */}
-        <div className="p-4 bg-slate-950/90 rounded-lg border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="text-xs font-semibold text-slate-300">
-              Total Combined Estimated Amount Put to Tender (120m Corridor Segment):
-            </div>
-            <div className="text-[11px] text-slate-400 mt-0.5">
-              Part 1 (₹3.72 Lakhs) + Part 2 (₹24.48 Lakhs) • Defect Liability: 1 Year • Security Deposit: 10%
-            </div>
-          </div>
-
-          <div className="text-right">
-            <div className="text-2xl font-black text-white font-mono">
-              ₹{totalSegmentCost.toLocaleString('en-IN')}
-            </div>
-            <span className="text-xs text-emerald-400 font-semibold">
-              ₹{totalSegmentLakhs} Lakhs (120m Corridor Segment Sanction)
-            </span>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* 4. MODAL: FULL PHOTOGRAMMETRIC PHOTO & SURVEY VIDEO PREVIEW */}
       {showMediaModal && selectedPothole && (

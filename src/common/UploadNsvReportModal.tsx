@@ -33,45 +33,86 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedPdfName, setUploadedPdfName] = useState<string>('');
-  const [isExtractingData, setIsExtractingData] = useState<boolean>(false);
+  const [detectedPageCount, setDetectedPageCount] = useState<number>(14);
+  const [uploadStage, setUploadStage] = useState<'idle' | 'uploading' | 'analyzing' | 'complete'>('idle');
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [analyzingStep, setAnalyzingStep] = useState<number>(0);
   const [extractionComplete, setExtractionComplete] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen) {
       const isUploaded = localStorage.getItem(`nsv_uploaded_${roadCode}`) === 'true';
       const savedName = localStorage.getItem(`nsv_pdf_name_${roadCode}`);
+      const savedPages = Number(localStorage.getItem(`nsv_pdf_pages_${roadCode}`)) || 14;
+      setDetectedPageCount(savedPages);
       if (isUploaded && savedName) {
         setUploadedPdfName(savedName);
         setExtractionComplete(true);
+        setUploadStage('complete');
       } else if (isMar1111) {
         setUploadedPdfName('NSV_Report_NKDA_Road_MAR_1111_Reference_Style.pdf');
         setExtractionComplete(true);
+        setUploadStage('complete');
       } else {
         setUploadedPdfName('');
         setExtractionComplete(false);
+        setUploadStage('idle');
       }
       setUploadError(null);
-      setIsExtractingData(false);
+      setUploadProgress(0);
+      setAnalyzingStep(0);
     }
   }, [isOpen, roadCode, isMar1111]);
 
   if (!isOpen) return null;
 
-  const handleSimulateExtraction = (filename: string) => {
-    setIsExtractingData(true);
+  const handleSimulateExtraction = (filename: string, pageCount: number = 14) => {
+    setDetectedPageCount(pageCount);
     setExtractionComplete(false);
-    setTimeout(() => {
-      setIsExtractingData(false);
+    setUploadStage('uploading');
+    setUploadProgress(15);
+    setAnalyzingStep(0);
+
+    // Stage 1: Uploading progress
+    const t1 = setTimeout(() => setUploadProgress(48), 280);
+    const t2 = setTimeout(() => setUploadProgress(82), 600);
+    const t3 = setTimeout(() => setUploadProgress(100), 900);
+
+    // Stage 2: Analyzing Extracted Results
+    const t4 = setTimeout(() => {
+      setUploadStage('analyzing');
+      setAnalyzingStep(1);
+    }, 1100);
+
+    const t5 = setTimeout(() => setAnalyzingStep(2), 1550);
+    const t6 = setTimeout(() => setAnalyzingStep(3), 1950);
+    const t7 = setTimeout(() => setAnalyzingStep(4), 2400);
+
+    // Stage 3: Complete & verified
+    const t8 = setTimeout(() => {
+      setUploadStage('complete');
       setExtractionComplete(true);
       localStorage.setItem(`nsv_uploaded_${roadCode}`, 'true');
       localStorage.setItem(`nsv_pdf_name_${roadCode}`, filename);
+      localStorage.setItem(`nsv_pdf_pages_${roadCode}`, String(pageCount));
       window.dispatchEvent(
-        new CustomEvent('nsv-uploaded', { detail: { roadCode, filename } })
+        new CustomEvent('nsv-uploaded', { detail: { roadCode, filename, pageCount } })
       );
       if (onUploadSuccess) {
         onUploadSuccess(filename);
       }
-    }, 700);
+    }, 2800);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      clearTimeout(t5);
+      clearTimeout(t6);
+      clearTimeout(t7);
+      clearTimeout(t8);
+    };
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +129,9 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
       }
       setUploadError(null);
       setUploadedPdfName(file.name);
-      handleSimulateExtraction(file.name);
+      // Estimate dynamic page count from file size (e.g. 8-18 pages) or detect from content
+      const estimatedPages = Math.max(6, Math.min(24, Math.round(file.size / 75000) || 12));
+      handleSimulateExtraction(file.name, estimatedPages);
     }
   };
 
@@ -96,7 +139,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
     setUploadError(null);
     const fname = 'NSV_Report_NKDA_Road_MAR_1111_Reference_Style.pdf';
     setUploadedPdfName(fname);
-    handleSimulateExtraction(fname);
+    handleSimulateExtraction(fname, 14);
   };
 
   const handleSaveAndClose = () => {
@@ -201,27 +244,115 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
             )}
           </div>
 
-          {/* Extraction Progress Animation */}
-          {isExtractingData && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl space-y-2 text-center">
-              <div className="inline-block w-5 h-5 border-2 border-[#1a73e8] border-t-transparent rounded-full animate-spin"></div>
-              <p className="font-bold text-blue-900 text-xs">Extracting NSV Sensors &amp; Pavement Telemetry...</p>
-              <p className="text-[10px] text-blue-600 font-mono">
-                Parsing Laser Profilometer readings • IRI 5.20 • 20mm Rutting
-              </p>
+          {/* Stage 1: Uploading Report Progress Bar */}
+          {uploadStage === 'uploading' && (
+            <div className="p-4 bg-blue-50/90 border border-blue-200 rounded-xl space-y-2.5 animate-in fade-in shadow-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-[#1a73e8] border-t-transparent rounded-full animate-spin" />
+                  <span className="font-bold text-blue-950 text-xs">
+                    Uploading Report Document ({uploadedPdfName})...
+                  </span>
+                </div>
+                <span className="font-mono font-bold text-xs text-[#1a73e8]">
+                  {uploadProgress}%
+                </span>
+              </div>
+
+              {/* Progress Track */}
+              <div className="w-full h-2 bg-blue-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-[#1a73e8] transition-all duration-300 rounded-full"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+
+              <div className="text-[10px] text-blue-700 flex items-center justify-between font-mono">
+                <span>Validating checksum &amp; PDF MIME headers...</span>
+                <span>Transferring to Laser Profilometer parser</span>
+              </div>
+            </div>
+          )}
+
+          {/* Stage 2: Analyzing Extracted Results from PDF */}
+          {uploadStage === 'analyzing' && (
+            <div className="p-4 bg-gradient-to-br from-indigo-50/90 to-blue-50/90 border border-indigo-200 rounded-xl space-y-3 animate-in fade-in shadow-xs">
+              <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-indigo-600 animate-spin" />
+                  <span className="font-bold text-indigo-950 text-xs">
+                    Analyzing Results &amp; Parsing Telemetry...
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">
+                  Telemetry Engine Active
+                </span>
+              </div>
+
+              <div className="space-y-2 text-[11px]">
+                <div className="flex items-center gap-2 transition-all">
+                  {analyzingStep >= 1 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  )}
+                  <span className={analyzingStep >= 1 ? 'text-slate-800 font-medium' : 'text-indigo-950 font-bold'}>
+                    1. Reading {detectedPageCount}-page PDF document tables &amp; corridor metadata...
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 transition-all">
+                  {analyzingStep >= 2 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                  ) : analyzingStep === 1 ? (
+                    <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 rounded-full border border-slate-300 flex-shrink-0" />
+                  )}
+                  <span className={analyzingStep >= 2 ? 'text-slate-800 font-medium' : analyzingStep === 1 ? 'text-indigo-950 font-bold' : 'text-slate-400'}>
+                    2. Parsing Laser Profilometer readings • Computing IRI (5.20 m/km)...
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 transition-all">
+                  {analyzingStep >= 3 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                  ) : analyzingStep === 2 ? (
+                    <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 rounded-full border border-slate-300 flex-shrink-0" />
+                  )}
+                  <span className={analyzingStep >= 3 ? 'text-slate-800 font-medium' : analyzingStep === 2 ? 'text-indigo-950 font-bold' : 'text-slate-400'}>
+                    3. Cross-referencing 4 verified potholes &amp; 0.0372 m³ void volume...
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 transition-all">
+                  {analyzingStep >= 4 ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                  ) : analyzingStep === 3 ? (
+                    <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 rounded-full border border-slate-300 flex-shrink-0" />
+                  )}
+                  <span className={analyzingStep >= 4 ? 'text-slate-800 font-medium' : analyzingStep === 3 ? 'text-indigo-950 font-bold' : 'text-slate-400'}>
+                    4. Synthesizing MoRTH pavement layer structure &amp; defect inventory...
+                  </span>
+                </div>
+              </div>
             </div>
           )}
 
           {/* Extracted Parameter Cards */}
-          {extractionComplete && (
+          {extractionComplete && uploadStage !== 'uploading' && uploadStage !== 'analyzing' && (
             <div className="space-y-3 animate-in fade-in">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  Extracted Sensor Telemetry &amp; BoQ Specifications:
+                  Extracted Sensor Telemetry &amp; Pavement Baseline:
                 </span>
-                <span className="text-[10px] font-mono text-emerald-700 font-bold">
-                  100% Client-Side Parsed
+                <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  ✓ Parsed from {uploadedPdfName}
                 </span>
               </div>
 
@@ -235,7 +366,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
                 <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
                   <span className="text-[10px] text-slate-400 block font-semibold">Transverse Rut Depth</span>
                   <span className="text-sm font-black font-mono text-amber-600">20 mm</span>
-                  <span className="text-[10px] text-amber-700 block">Cold milling required</span>
+                  <span className="text-[10px] text-amber-700 block">Outer Wheelpath (Lane 1)</span>
                 </div>
 
                 <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
@@ -245,15 +376,20 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
                 </div>
 
                 <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block font-semibold">DPR Segment Sanction</span>
-                  <span className="text-sm font-black font-mono text-emerald-700">₹28.20 Lakhs</span>
-                  <span className="text-[10px] text-slate-500 block">120m Resurfacing + Patching</span>
+                  <span className="text-[10px] text-slate-400 block font-semibold">Identified Resurfacing Scope</span>
+                  <span className="text-sm font-black font-mono text-blue-700">120 Meters</span>
+                  <span className="text-[10px] text-slate-500 block">Km 0+000 to 0+120 Segment</span>
                 </div>
               </div>
 
-              <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-[11px] flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Report verified! Pavement data is synced with NSV Details and DPR BoQ engine.</span>
+              <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-[11px] flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>Report parsed &amp; verified! Pavement baseline ready for engineering inspection.</span>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-700 font-bold whitespace-nowrap">
+                  Ready to View
+                </span>
               </div>
             </div>
           )}
@@ -272,10 +408,10 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              disabled={!extractionComplete}
+              disabled={!extractionComplete || uploadStage === 'uploading' || uploadStage === 'analyzing'}
               onClick={handleSaveAndClose}
               className={`px-3 py-2 border text-xs font-bold rounded-lg transition ${
-                extractionComplete
+                extractionComplete && uploadStage !== 'uploading' && uploadStage !== 'analyzing'
                   ? 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 cursor-pointer'
                   : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
               }`}
@@ -285,11 +421,11 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
             <button
               type="button"
-              disabled={!extractionComplete}
+              disabled={!extractionComplete || uploadStage === 'uploading' || uploadStage === 'analyzing'}
               onClick={handleViewNsvDetails}
-              className={`px-4 py-2 text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-xs ${
-                extractionComplete
-                  ? 'bg-[#1a73e8] hover:bg-[#1557b0] text-white cursor-pointer'
+              className={`px-4 py-2 text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-md ${
+                extractionComplete && uploadStage !== 'uploading' && uploadStage !== 'analyzing'
+                  ? 'bg-[#1a73e8] hover:bg-[#1557b0] text-white ring-4 ring-blue-300 shadow-xl shadow-blue-500/40 cursor-pointer animate-pulse'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >

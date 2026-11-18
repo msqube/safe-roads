@@ -242,12 +242,45 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
 
     const latLngs: L.LatLngTuple[] = verifiedSnapPoints.map((s) => [s.gps.lat, s.gps.lng]);
 
-    // Draw Route Polyline
+    // 1. Uniform Asphalt Carriageway Base (Constant width representation of 7.5m dual carriageway)
+    L.polyline(latLngs, {
+      color: '#1e293b',
+      weight: 18,
+      opacity: 0.9,
+      lineCap: 'round',
+      lineJoin: 'round',
+    }).addTo(layerGroup);
+
+    // 2. Uniform White Shoulder / Curb Borders
+    L.polyline(latLngs, {
+      color: '#ffffff',
+      weight: 16,
+      opacity: 0.4,
+      lineCap: 'round',
+    }).addTo(layerGroup);
+
+    // 3. Resurfacing Lane 1 Core Asphalt Surface (Uniform Breadth)
+    L.polyline(latLngs, {
+      color: '#0f172a',
+      weight: 14,
+      opacity: 0.95,
+      lineCap: 'round',
+    }).addTo(layerGroup);
+
+    // 4. Center Dashed Lane Divider (Uniform straight centerline)
+    L.polyline(latLngs, {
+      color: '#facc15',
+      weight: 2,
+      opacity: 0.9,
+      dashArray: '6, 6',
+    }).addTo(layerGroup);
+
+    // 5. Waypoint Flight Trajectory Vector (High-tech cyan/blue line)
     const routeLine = L.polyline(latLngs, {
       color: mapType === 'satellite' ? '#38bdf8' : '#1a73e8',
-      weight: 5,
+      weight: 3,
       opacity: 0.85,
-      dashArray: '8, 8',
+      dashArray: '4, 4',
     }).addTo(layerGroup);
 
     // Add Markers for each snap point
@@ -262,11 +295,11 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
         html: `
           <div style="
             background-color: ${markerColor};
-            width: ${isSelected ? '32px' : '26px'};
-            height: ${isSelected ? '32px' : '26px'};
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: 2px solid #ffffff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            box-shadow: ${isSelected ? '0 0 0 4px rgba(26, 115, 232, 0.45), 0 3px 8px rgba(0,0,0,0.5)' : '0 2px 6px rgba(0,0,0,0.35)'};
             display: flex;
             align-items: center;
             justify-content: center;
@@ -280,8 +313,8 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
             ${idx + 1}
           </div>
         `,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15],
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
       });
 
       const marker = L.marker([snap.gps.lat, snap.gps.lng], { icon: customIcon }).addTo(layerGroup);
@@ -348,30 +381,30 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
   };
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-xs flex flex-col">
-      {/* Map Header Toolbar */}
-      <div className="px-4 py-2.5 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Navigation className="w-4 h-4 text-[#1a73e8]" />
-            <h4 className="text-sm font-bold text-slate-900">
+    <div className="w-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex flex-col">
+      {/* Map Header Toolbar - Harmonized Height & Equal Padding p-3.5 */}
+      <div className="p-3.5 border-b border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 font-sans">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Navigation className="w-3.5 h-3.5 text-[#1a73e8] flex-shrink-0" />
+            <h4 className="text-xs font-bold text-slate-900 tracking-tight whitespace-nowrap">
               Live Real-World Road Map (New Town Kolkata)
             </h4>
-            <span className="text-xs px-2 py-0.5 rounded font-semibold bg-blue-50 text-[#1a73e8] border border-blue-200">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded font-semibold bg-blue-50 text-[#1a73e8] border border-blue-200 whitespace-nowrap">
               {verifiedSnapPoints.length} Geotagged Snaps
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <p className="text-[11px] text-slate-500 font-mono">
             {roadCode} • {roadName}
           </p>
         </div>
 
-        {/* Map View & Layer Controls */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Map View & Layer Controls - Harmonized h-7 Buttons */}
+        <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
           {/* Inspect Structure Trigger */}
           <button
             onClick={() => setInspectModalSnap(activeSnap || verifiedSnapPoints[0] || null)}
-            className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 rounded text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition shadow-xs"
+            className="h-7 px-2.5 bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition shadow-2xs whitespace-nowrap"
             title="Inspect real road structure & drone photogrammetry telemetry"
           >
             <Eye className="w-3.5 h-3.5 text-[#1a73e8]" />
@@ -379,12 +412,12 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
           </button>
 
           {/* Map Layer Switcher: Streets vs Real Satellite */}
-          <div className="flex items-center bg-slate-100 p-0.5 rounded border border-slate-200 text-xs">
+          <div className="h-7 flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
             <button
               onClick={() => setMapType('streets')}
-              className={`px-2.5 py-1 rounded transition font-medium cursor-pointer flex items-center gap-1 ${
+              className={`h-6 px-2 rounded-md transition font-medium cursor-pointer flex items-center gap-1 text-[11px] ${
                 mapType === 'streets'
-                  ? 'bg-white text-[#1a73e8] font-bold shadow-xs'
+                  ? 'bg-white text-[#1a73e8] font-bold shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -392,9 +425,9 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
             </button>
             <button
               onClick={() => setMapType('satellite')}
-              className={`px-2.5 py-1 rounded transition font-medium cursor-pointer flex items-center gap-1 ${
+              className={`h-6 px-2 rounded-md transition font-medium cursor-pointer flex items-center gap-1 text-[11px] ${
                 mapType === 'satellite'
-                  ? 'bg-white text-[#1a73e8] font-bold shadow-xs'
+                  ? 'bg-white text-[#1a73e8] font-bold shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -407,7 +440,7 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
           <button
             onClick={handleCenterOnSelected}
             title="Recenter on active GPS point"
-            className="p-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded border border-slate-300 transition cursor-pointer flex items-center gap-1 text-xs"
+            className="h-7 px-2 bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1 text-xs shadow-2xs whitespace-nowrap"
           >
             <Crosshair className="w-3.5 h-3.5 text-blue-600" />
             <span className="hidden sm:inline">Center</span>
@@ -417,7 +450,7 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
           <button
             onClick={openInGoogleMaps}
             title="Open in Google Maps / Google Street View at exact location"
-            className="px-2.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded border border-slate-300 transition cursor-pointer flex items-center gap-1 text-xs font-semibold"
+            className="h-7 px-2.5 bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1 text-xs font-semibold shadow-2xs whitespace-nowrap"
           >
             <ExternalLink className="w-3.5 h-3.5 text-red-600" />
             <span>Google Maps</span>

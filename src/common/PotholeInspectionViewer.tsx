@@ -66,35 +66,36 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
         </div>
       )}
 
-      {/* Top Header */}
-      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3">
+      {/* Top Header - Equal Padding p-3.5 */}
+      <div className="p-3.5 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <span>2. Lane Numbered Potholes &amp; Defect Inspection Gallery</span>
-            <span className="text-xs px-2.5 py-0.5 rounded font-mono bg-red-100 text-red-800 border border-red-300 font-bold">
+            <span>Verified Defect Telemetry</span>
+            <span className="text-xs px-2 py-0.5 rounded font-mono bg-red-100 text-red-800 border border-red-300 font-bold">
               {activeDefect.potholeId}
             </span>
           </h4>
-          <p className="text-xs text-slate-500">
-            Chainage {activeDefect.chainage} • 20mm Depth • Part of 120m Corridor Package
+          <p className="text-[11px] text-slate-500">
+            Chainage {activeDefect.chainage} • 20mm Depth • 120m Resurfacing Segment
           </p>
         </div>
 
         {/* Defect Switcher & Box toggle */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {defects.length > 1 && (
-            <div className="flex items-center gap-1 bg-white border border-slate-200 rounded p-1">
+            <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
               {defects.map((d, idx) => (
                 <button
                   key={d.id}
                   onClick={() => handleSelectDefect(d.id)}
-                  className={`px-2.5 py-1 text-xs rounded font-medium cursor-pointer transition ${
+                  className={`px-2 py-1 text-xs rounded font-bold cursor-pointer transition ${
                     activeDefect.id === d.id
-                      ? 'bg-blue-600 text-white font-bold shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-red-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
+                  title={`Inspect Pothole #${idx + 1} (${d.potholeId})`}
                 >
-                  Pothole #{idx + 1} ({d.potholeId})
+                  P{idx + 1}
                 </button>
               ))}
             </div>
@@ -102,10 +103,10 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
 
           <button
             onClick={() => setShowBoundingBox(!showBoundingBox)}
-            className={`px-2.5 py-1 text-xs rounded border cursor-pointer font-medium transition ${
+            className={`px-2.5 py-1 text-xs rounded-lg border cursor-pointer font-medium transition ${
               showBoundingBox
                 ? 'bg-blue-50 text-blue-700 border-blue-200 font-semibold'
-                : 'bg-white text-slate-600 border-slate-200'
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
             }`}
           >
             {showBoundingBox ? 'Hide AI Box' : 'Show AI Box'}

@@ -8,6 +8,7 @@ import { ScoreMeter } from '../../common/ScoreMeter';
 import { AssignRepairModal } from './AssignRepairModal';
 import { DronePhotoModal } from './DronePhotoModal';
 import { Gps360Modal } from './Gps360Modal';
+import { UploadNsvReportModal } from '../../common/UploadNsvReportModal';
 import type { DroneSurveyRecord, RepairPriority } from '../../models/surveyModels';
 import { surveyService } from '../../services/surveyService';
 import {
@@ -25,6 +26,7 @@ import {
   TrendingUp,
   Video,
   Play,
+  Upload,
 } from 'lucide-react';
 
 export const DroneSurveyListing: React.FC = () => {
@@ -35,6 +37,7 @@ export const DroneSurveyListing: React.FC = () => {
 
   const [data, setData] = useState<DroneSurveyRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [uploadModalRecord, setUploadModalRecord] = useState<{ roadCode: string; roadName?: string } | null>(null);
 
   // Filters
   const [actionAreaFilter, setActionAreaFilter] = useState('ALL');
@@ -560,32 +563,31 @@ const handleIgnoreCheckLater = async (row: DroneSurveyRecord) => {
           width: '280px',
           align: 'center',
           render: (row) => {
+            const isUploaded =
+              row.roadCode === 'MAR-1111' ||
+              row.roadCode.includes('1111') ||
+              localStorage.getItem(`nsv_uploaded_${row.roadCode}`) === 'true';
+
             if (row.pipelineTier === 'pending_drone') {
               return (
                 <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                  <button
-                    onClick={() => handleViewNSVDetails(row.roadCode)}
-                    className="px-2.5 py-1 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded transition cursor-pointer flex items-center gap-1"
-                    title="View corridor inspection status"
-                  >
-                    <Eye className="w-3.5 h-3.5 text-slate-500" />
-                    <span>View Status</span>
-                  </button>
+                  <span className="px-2 py-0.5 text-[10px] font-medium bg-slate-100 text-slate-500 rounded border border-slate-200">
+                    Drone Pending
+                  </span>
                 </div>
               );
             }
 
-            if (row.pipelineTier === 'drone_only') {
+            if (!isUploaded) {
               return (
                 <div className="flex items-center justify-center gap-1.5 flex-wrap">
                   <button
-                    onClick={() => handleViewNSVDetails(row.roadCode)}
-                    className="px-2.5 py-1 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded transition cursor-pointer flex items-center gap-1 shadow-xs"
-                    title="Drone survey completed. NSV survey is pending - click to deploy NSV"
+                    onClick={() => setUploadModalRecord({ roadCode: row.roadCode, roadName: row.roadName })}
+                    className="px-2.5 py-1 text-xs font-semibold bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded transition cursor-pointer flex items-center gap-1 shadow-xs active:scale-98"
+                    title="Upload certified NSV report PDF to extract road telemetry"
                   >
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                    <span>NSV Pending</span>
-                    <ExternalLink className="w-3 h-3 opacity-80" />
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload NSV</span>
                   </button>
                   <button
                     onClick={() => setAssignModalRecord(row)}
@@ -600,14 +602,14 @@ const handleIgnoreCheckLater = async (row: DroneSurveyRecord) => {
 
             return (
               <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                {/* View NSV details button */}
+                {/* View NSV details button - ONLY visible when NSV report is uploaded! */}
                 <button
                   onClick={() => handleViewNSVDetails(row.roadCode)}
-                  className="px-2.5 py-1 text-xs font-semibold bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded transition cursor-pointer flex items-center gap-1 shadow-xs"
-                  title="Open parameters, 360° road panorama & snap map in new tab"
+                  className="px-2.5 py-1 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded transition cursor-pointer flex items-center gap-1 shadow-xs"
+                  title="Open extracted NSV telemetry & parameters"
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  <span>View NSV details</span>
+                  <span>View NSV Details</span>
                   <ExternalLink className="w-3 h-3 opacity-80" />
                 </button>
 
@@ -892,6 +894,20 @@ const handleIgnoreCheckLater = async (row: DroneSurveyRecord) => {
                                   onViewNSV={handleViewNSVDetails}
                                   onViewDPR={handleViewDPR}
                                 />
+
+                                {/* Upload NSV Report Modal */}
+                                {uploadModalRecord && (
+                                  <UploadNsvReportModal
+                                    isOpen={Boolean(uploadModalRecord)}
+                                    onClose={() => setUploadModalRecord(null)}
+                                    roadCode={uploadModalRecord.roadCode}
+                                    roadName={uploadModalRecord.roadName}
+                                    onUploadSuccess={() => {
+                                      setUploadModalRecord(null);
+                                      setData((prev) => [...prev]);
+                                    }}
+                                  />
+                                )}
                               </div>
                           );
 };
