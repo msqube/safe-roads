@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FormPageHeader } from '../../common/FormPageHeader';
 import { GenericButton } from '../../common/GenericButton';
 import { CreateScheduleModal } from './CreateScheduleModal';
+import { PageContainer } from '../../common/PageContainer';
 import { LaneScheduleItem } from '../../models/schedulerModels';
 import { schedulerService } from '../../services/schedulerService';
 import {
@@ -49,7 +50,7 @@ export const LaneSchedulerPage: React.FC = () => {
     };
 
   return (
-      <div className="space-y-4">
+    <PageContainer>
         {/* Toast */}
         {toastMessage && (
             <div className="fixed bottom-5 right-5 z-50 p-3 bg-white border border-slate-300 rounded-lg shadow-lg text-xs font-medium text-slate-800 flex items-center gap-2">
@@ -154,6 +155,6 @@ export const LaneSchedulerPage: React.FC = () => {
                           onClose={() => setIsModalOpen(false)}
                           onCreateSchedule={handleCreate}
                         />
-                      </div>
+                      </PageContainer>
                       );
 };

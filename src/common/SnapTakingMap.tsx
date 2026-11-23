@@ -162,12 +162,12 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
       {/* 2. 100% Horizontally Straight Corridor Runway (Row-Wise Alignment, Zero Slant, Standard Padding p-4) */}
       <div className="relative w-full h-[360px] bg-slate-950 flex flex-col justify-between p-4 select-none overflow-hidden border-b border-slate-200">
         {/* Top Chainage Scale Row */}
-        <div className="flex items-center justify-between text-xs font-mono text-slate-300 pb-2 border-b border-slate-800">
+        <div className="flex items-center justify-between text-xs font-sans tabular-nums text-slate-300 pb-2 border-b border-slate-800">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-bold text-white">Km 0+000 (Start of 120m Resurfacing Segment)</span>
           </div>
-          <div className="flex items-center gap-6 md:gap-14 text-[11px] text-slate-400 font-medium hidden sm:flex">
+          <div className="flex items-center gap-6 md:gap-14 text-[11px] text-slate-400 font-medium hidden sm:flex tabular-nums">
             <span>Km 0+020</span>
             <span>Km 0+040</span>
             <span>Km 0+060</span>
@@ -185,14 +185,14 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
           {/* Lane 2: Fast Carriageway (Top Horizontal Lane) */}
           <div className="h-1/2 border-b-2 border-dashed border-amber-400/80 relative flex items-center px-4 bg-slate-900/60">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700">
+              <span className="px-2 py-0.5 rounded text-[9px] font-sans font-bold bg-slate-800 text-slate-300 border border-slate-700">
                 LANE 2
               </span>
-              <span className="text-[11px] font-mono font-semibold text-slate-300">
+              <span className="text-[11px] font-sans font-semibold text-slate-300">
                 Fast Carriageway • Median Divider Verge
               </span>
             </div>
-            <span className="absolute right-4 text-[10px] font-mono text-emerald-400 font-semibold">
+            <span className="absolute right-4 text-[10px] font-sans tabular-nums text-emerald-400 font-semibold">
               IRI: 3.80 m/km • Sound Surface
             </span>
           </div>
@@ -200,14 +200,14 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
           {/* Lane 1: Slow / Heavy Wheelpath Resurfacing Zone (Bottom Horizontal Lane) */}
           <div className="h-1/2 relative flex items-center px-4 bg-slate-950/90">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-red-950 text-red-300 border border-red-800">
+              <span className="px-2 py-0.5 rounded text-[9px] font-sans font-bold bg-red-950 text-red-300 border border-red-800">
                 LANE 1
               </span>
-              <span className="text-[11px] font-mono font-bold text-red-400">
+              <span className="text-[11px] font-sans font-bold text-red-400">
                 Slow / Heavy Wheelpath (Resurfacing Scope: 120m)
               </span>
             </div>
-            <span className="absolute right-4 text-[10px] font-mono text-red-400 font-bold hidden sm:inline">
+            <span className="absolute right-4 text-[10px] font-sans tabular-nums text-red-400 font-bold hidden sm:inline">
               IRI: 5.20 m/km • 20mm Rutting Depth
             </span>
 

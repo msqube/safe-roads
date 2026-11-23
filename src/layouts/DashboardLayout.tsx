@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 
 export const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   return (
     <div className="flex h-screen w-full bg-slate-50 text-slate-800 overflow-hidden font-sans">
@@ -23,10 +31,11 @@ export const DashboardLayout: React.FC = () => {
           <span className="text-xs font-bold text-slate-800">SafeRoads NKDA</span>
         </div>
 
-        <main className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden px-4 lg:px-6 py-4 bg-slate-50">
-          <div className="w-full max-w-7xl mx-auto min-w-0 space-y-4">
-            <Outlet />
-          </div>
+        <main
+          ref={mainRef}
+          className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden py-4 bg-slate-50"
+        >
+          <Outlet />
         </main>
       </div>
     </div>

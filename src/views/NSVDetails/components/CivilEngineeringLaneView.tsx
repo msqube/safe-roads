@@ -205,7 +205,7 @@ export const CivilEngineeringLaneView: React.FC<CivilEngineeringLaneViewProps> =
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full font-mono text-[11px] font-bold bg-blue-600 text-white">
+            <span className="px-2 py-0.5 rounded-full font-sans text-[11px] font-bold bg-blue-600 text-white tracking-wide">
               PAVEMENT SPECIFICATIONS
             </span>
             <h4 className="text-sm font-bold text-slate-900">
@@ -278,7 +278,7 @@ export const CivilEngineeringLaneView: React.FC<CivilEngineeringLaneViewProps> =
         {/* Schematic Header - Consistent px-4 py-3 */}
         <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full font-mono text-[11px] font-bold bg-[#1a73e8] text-white">
+            <span className="px-2 py-0.5 rounded-full font-sans text-[11px] font-bold bg-[#1a73e8] text-white tracking-wide">
               CIVIL SCHEMATIC
             </span>
             <h3 className="text-sm font-bold text-slate-900">
@@ -295,7 +295,7 @@ export const CivilEngineeringLaneView: React.FC<CivilEngineeringLaneViewProps> =
         <div className="p-4 bg-slate-900 overflow-x-auto select-none">
           <div className="min-w-[760px] space-y-2">
             {/* Chainage Ruler */}
-            <div className="flex justify-between text-[11px] font-mono text-slate-400 px-2 pb-1 border-b border-slate-700">
+            <div className="flex justify-between text-[11px] font-sans tabular-nums text-slate-400 px-2 pb-1 border-b border-slate-700">
               <span className="flex items-center gap-1 font-bold text-white">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 Km 0+000 (Start)
@@ -312,13 +312,13 @@ export const CivilEngineeringLaneView: React.FC<CivilEngineeringLaneViewProps> =
             </div>
 
             {/* Road Asphalt Box */}
-            <div className="relative h-44 rounded-lg bg-gradient-to-b from-slate-800 via-slate-900 to-black border-2 border-slate-700 overflow-hidden shadow-inner flex flex-col justify-between">
+            <div className="relative h-44 rounded-xl bg-gradient-to-b from-slate-800 via-slate-900 to-black border-2 border-slate-700 overflow-hidden shadow-inner flex flex-col justify-between">
               {/* Lane 2: Fast Vehicles / Median Verge */}
               <div className="h-1/2 border-b border-dashed border-amber-400/80 relative flex items-center px-4">
-                <span className="text-[10px] font-mono font-bold text-slate-400 tracking-wider">
+                <span className="text-[10px] font-sans font-bold text-slate-400 tracking-wider">
                   LANE 2 — FAST CARRIAGEWAY (MEDIAN DIVIDER VERGE)
                 </span>
-                <span className="absolute right-4 text-[10px] font-mono text-emerald-400">
+                <span className="absolute right-4 text-[10px] font-sans tabular-nums text-emerald-400">
                   IRI: 3.8 m/km (Sound Bitumen)
                 </span>
               </div>

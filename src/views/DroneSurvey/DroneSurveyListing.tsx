@@ -9,6 +9,7 @@ import { AssignRepairModal } from './AssignRepairModal';
 import { DronePhotoModal } from './DronePhotoModal';
 import { Gps360Modal } from './Gps360Modal';
 import { UploadNsvReportModal } from '../../common/UploadNsvReportModal';
+import { PageContainer } from '../../common/PageContainer';
 import type { DroneSurveyRecord, RepairPriority } from '../../models/surveyModels';
 import { surveyService } from '../../services/surveyService';
 import {
@@ -645,7 +646,7 @@ const handleIgnoreCheckLater = async (row: DroneSurveyRecord) => {
               ];
 
               return (
-              <div className="space-y-2.5">
+              <PageContainer className="pb-6">
                 {/* Compact Page Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
                   <div className="flex items-center gap-2.5 flex-wrap">
@@ -908,6 +909,6 @@ const handleIgnoreCheckLater = async (row: DroneSurveyRecord) => {
                                     }}
                                   />
                                 )}
-                              </div>
+                              </PageContainer>
                           );
 };

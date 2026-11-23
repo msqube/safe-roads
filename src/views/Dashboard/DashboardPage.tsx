@@ -24,6 +24,7 @@ import { surveyService } from '../../services/surveyService';
 import { NewTownGisMap } from './components/NewTownGisMap';
 import { RoadInspectionSidePanel } from './components/RoadInspectionSidePanel';
 import { WorkflowPipelineTrail } from '../../common/WorkflowPipelineTrail';
+import { PageContainer } from '../../common/PageContainer';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -79,9 +80,9 @@ export const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-2.5 pb-6">
-      {/* Top Banner: GIS Command Center (Compact & Low-Profile) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs font-sans">
+    <PageContainer className="pb-6">
+      {/* Top Banner: GIS Command Center */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm font-sans">
         <div>
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="w-2 h-2 rounded-full bg-[#1a73e8]" />
@@ -120,19 +121,19 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* KPI Metric Summary Cards - Compact & High-Density */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-sans">
+      {/* KPI Metric Summary Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-sans">
         {/* Card 1: Monitored Corridors */}
         <div
           onClick={() => navigate('/survey')}
-          className="p-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-0.5 hover:border-blue-400 hover:shadow-xs cursor-pointer transition group"
+          className="h-full min-h-[104px] flex flex-col justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-blue-400 hover:shadow-md cursor-pointer transition group"
           title="Click to view all surveyed corridors directory"
         >
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-[10px] font-semibold uppercase tracking-wider">Monitored Corridors</span>
             <Navigation className="w-3.5 h-3.5 text-[#1a73e8]" />
           </div>
-          <div className="text-lg font-extrabold text-slate-900">{surveys.length}</div>
+          <div className="text-xl font-bold text-slate-900 tabular-nums my-1">{surveys.length}</div>
           <div className="text-[10px] text-blue-600 font-semibold group-hover:underline flex items-center gap-0.5">
             <span>Browse 65 corridors</span>
             <ArrowRight className="w-2.5 h-2.5" />
@@ -142,16 +143,16 @@ export const DashboardPage: React.FC = () => {
         {/* Card 2: Critical Corridors */}
         <div
           onClick={() => navigate('/survey?condition=Critical')}
-          className="p-2.5 bg-red-50/70 border border-red-200 rounded-lg shadow-2xs space-y-0.5 hover:border-red-400 hover:shadow-xs cursor-pointer transition group"
+          className="h-full min-h-[104px] flex flex-col justify-between p-4 bg-red-50/70 border border-red-200 rounded-xl shadow-sm hover:border-red-400 hover:shadow-md cursor-pointer transition group"
           title="Click to filter Drone Survey Directory to Critical Lanes only"
         >
           <div className="flex items-center justify-between text-red-700">
             <span className="text-[10px] font-bold uppercase tracking-wider">Critical Corridors</span>
             <AlertTriangle className="w-3.5 h-3.5 text-[#ea4335]" />
           </div>
-          <div className="text-lg font-extrabold text-[#c5221f]">{criticalCount}</div>
+          <div className="text-xl font-bold text-[#c5221f] tabular-nums my-1">{criticalCount}</div>
           <div className="text-[10px] text-red-700 font-bold group-hover:underline flex items-center gap-0.5">
-            <span>🚨 View {criticalCount} Critical Lanes</span>
+            <span>View {criticalCount} Critical Lanes</span>
             <ArrowRight className="w-2.5 h-2.5" />
           </div>
         </div>
@@ -159,14 +160,14 @@ export const DashboardPage: React.FC = () => {
         {/* Card 3: Total Badness Area */}
         <div
           onClick={() => navigate('/survey?condition=Critical')}
-          className="p-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs space-y-0.5 hover:border-amber-400 hover:shadow-xs cursor-pointer transition group"
+          className="h-full min-h-[104px] flex flex-col justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-amber-400 hover:shadow-md cursor-pointer transition group"
           title="Click to view corridors with severe pothole area breaches"
         >
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-[10px] font-semibold uppercase tracking-wider">Cumulative Potholes</span>
             <Activity className="w-3.5 h-3.5 text-amber-500" />
           </div>
-          <div className="text-lg font-extrabold text-slate-900">
+          <div className="text-xl font-bold text-slate-900 tabular-nums my-1">
             {totalBadArea} <span className="text-[10px] font-normal text-slate-400">m²</span>
           </div>
           <div className="text-[10px] text-amber-700 font-semibold group-hover:underline flex items-center gap-0.5">
@@ -178,14 +179,14 @@ export const DashboardPage: React.FC = () => {
         {/* Card 4: Estimated Repair Cost */}
         <div
           onClick={() => navigate('/progress')}
-          className="p-2.5 bg-emerald-50/70 border border-emerald-200 rounded-lg shadow-2xs space-y-0.5 hover:border-emerald-400 hover:shadow-xs cursor-pointer transition group"
+          className="h-full min-h-[104px] flex flex-col justify-between p-4 bg-emerald-50/70 border border-emerald-200 rounded-xl shadow-sm hover:border-emerald-400 hover:shadow-md cursor-pointer transition group"
           title="Click to view execution progress & sanction breakdown"
         >
           <div className="flex items-center justify-between text-emerald-700">
             <span className="text-[10px] font-bold uppercase tracking-wider">Estimated Repair Cost</span>
             <DollarSign className="w-3.5 h-3.5 text-[#34a853]" />
           </div>
-          <div className="text-lg font-extrabold text-[#137333]">
+          <div className="text-xl font-bold text-[#137333] tabular-nums my-1">
             ₹{totalCostLakhs} <span className="text-[10px] font-normal text-emerald-600">Lakh</span>
           </div>
           <div className="text-[10px] text-emerald-800 font-semibold group-hover:underline flex items-center gap-0.5">
@@ -195,18 +196,20 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Action Area Filter Bar - Compact */}
-      <div className="flex flex-wrap items-center justify-between gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-sans">
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-slate-500 font-semibold text-[11px] mr-1">Zone:</span>
+      {/* Action Area Filter Bar - Standardized Equal Padding p-4 and Equal Margin Gaps */}
+      <div className="w-full max-w-full min-w-0 bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-sans">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider mr-1 flex items-center gap-1.5 flex-shrink-0">
+            Zone:
+          </span>
           {['All', 'Action Area I', 'Action Area II', 'Action Area III', 'CBD'].map((zone) => (
             <button
               key={zone}
               onClick={() => setSelectedActionArea(zone)}
-              className={`px-2.5 py-0.5 rounded text-[11px] transition font-medium cursor-pointer ${
+              className={`h-8 px-3 rounded-lg text-xs font-semibold inline-flex items-center justify-center transition cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 ${
                 selectedActionArea === zone
-                  ? 'bg-[#1a73e8] text-white font-bold shadow-2xs'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  ? 'bg-[#1a73e8] text-white shadow-sm'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/60'
               }`}
             >
               {zone}
@@ -214,17 +217,17 @@ export const DashboardPage: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={() => navigate('/progress')}
-            className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded font-bold text-[11px] transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            className="h-8 px-3 bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition cursor-pointer shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
           >
-            <TrendingUp className="w-3 h-3 text-blue-600" />
+            <TrendingUp className="w-3.5 h-3.5 text-[#1a73e8]" />
             <span>Progress Report</span>
           </button>
-          <div className="text-slate-400 text-[10px] font-mono hidden sm:inline">
+          <span className="h-8 px-2.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-xs font-semibold tabular-nums inline-flex items-center">
             {filteredSurveys.length}/{surveys.length} Corridors
-          </div>
+          </span>
         </div>
       </div>
 
@@ -445,6 +448,6 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 };

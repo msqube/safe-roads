@@ -13,9 +13,11 @@ html,
 body,
 #root {
   width: 100%;
+  max-width: 100%;
   min-height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -46,28 +48,50 @@ a:focus-visible,
   outline-offset: 1px !important;
 }
 
-/* Global Custom Visible Scrollbar across whole project */
-::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+/* Scoped Custom Visible Scrollbars (No custom scrollbar on html/body) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
-::-webkit-scrollbar-track {
+html,
+body {
+  scrollbar-width: none !important;
+}
+
+main::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+main::-webkit-scrollbar-track,
+aside::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb {
+main::-webkit-scrollbar-thumb,
+aside::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
   background: #94a3b8;
   border-radius: 9999px;
   border: 1px solid #f1f5f9;
 }
 
-::-webkit-scrollbar-thumb:hover {
+main::-webkit-scrollbar-thumb:hover,
+aside::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
 
-* {
+main,
+aside,
+.custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #94a3b8 #f1f5f9;
 }

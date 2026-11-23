@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { surveyService } from '../../services/surveyService';
 import { DroneSurveyRecord } from '../../models/surveyModels';
+import { PageContainer } from '../../common/PageContainer';
 
 export const ProgressReportPage: React.FC = () => {
   const navigate = useNavigate();
@@ -126,9 +127,9 @@ export const ProgressReportPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <PageContainer className="pb-12">
       {/* Header Banner */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider">
@@ -168,7 +169,7 @@ export const ProgressReportPage: React.FC = () => {
       </div>
 
       {/* 5 Statutory Progress Target Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         {/* Card 1: Target Corridors */}
         <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs space-y-2">
           <div className="flex items-center justify-between text-xs text-slate-500">
@@ -270,7 +271,7 @@ export const ProgressReportPage: React.FC = () => {
       </div>
 
       {/* 4-Stage Statutory Pipeline Progression Overview */}
-      <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-xs space-y-4">
+      <div className="p-5 bg-white border border-slate-200 rounded-xl shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-slate-900">
@@ -341,7 +342,7 @@ export const ProgressReportPage: React.FC = () => {
       </div>
 
       {/* Master Progress Directory Table */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden space-y-0">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden space-y-0">
         {/* Controls Bar */}
         <div className="p-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3 text-xs">
           {/* Filter Pills */}
@@ -627,6 +628,6 @@ export const ProgressReportPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 };

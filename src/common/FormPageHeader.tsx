@@ -23,7 +23,7 @@ export const FormPageHeader: React.FC<FormPageHeaderProps> = ({
   actions,
 }) => {
   return (
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 mb-6">
+    <div className="w-full bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 font-sans">
           <div className="space-y-1">
             {breadcrumbs && breadcrumbs.length > 0 && (
                 <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">

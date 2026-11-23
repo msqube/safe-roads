@@ -21,6 +21,7 @@ import { DroneSurveyRecord, RepairPriority } from '../../models/surveyModels';
 import { surveyService } from '../../services/surveyService';
 import { UploadNsvReportModal } from '../../common/UploadNsvReportModal';
 import { WorkflowPipelineTrail } from '../../common/WorkflowPipelineTrail';
+import { PageContainer } from '../../common/PageContainer';
 import {
   ArrowLeft,
   Printer,
@@ -262,7 +263,7 @@ export const NSVDetailsPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-full min-w-0 space-y-4">
+    <PageContainer>
       {/* Toast */}
       {toastMessage && (
         <div className="fixed bottom-5 right-5 z-50 p-3 bg-white border border-slate-300 rounded-lg shadow-lg text-xs font-semibold text-slate-800 flex items-center gap-2">
@@ -628,31 +629,31 @@ export const NSVDetailsPage: React.FC = () => {
 
                     <div className="p-3 bg-white/10 rounded-xl border border-white/10">
                       <span className="text-[10px] text-blue-200 block uppercase font-medium">Roughness (IRI)</span>
-                      <div className="text-xs font-bold text-red-400 font-mono mt-0.5">5.20 m/km</div>
+                      <div className="text-xs font-bold text-red-400 tabular-nums mt-0.5">5.20 m/km</div>
                       <span className="text-[10px] text-slate-300">IRC:SP:16 Limit: 4.0</span>
                     </div>
 
-                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
-                      <span className="text-[9px] text-blue-200 block uppercase font-mono">Laser Rut Depth</span>
-                      <div className="text-xs font-bold text-amber-300 font-mono mt-0.5">20 mm</div>
+                    <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                      <span className="text-[10px] text-blue-200 block uppercase font-medium">Laser Rut Depth</span>
+                      <div className="text-xs font-bold text-amber-300 tabular-nums mt-0.5">20 mm</div>
                       <span className="text-[10px] text-slate-300">Lane 1 Wheelpath</span>
                     </div>
 
-                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
-                      <span className="text-[9px] text-blue-200 block uppercase font-mono">Verified Potholes</span>
-                      <div className="text-xs font-bold text-red-400 font-mono mt-0.5">4 Nos.</div>
-                      <span className="text-[10px] text-slate-300">1.86 m² • 0.037 m³</span>
+                    <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                      <span className="text-[10px] text-blue-200 block uppercase font-medium">Verified Potholes</span>
+                      <div className="text-xs font-bold text-red-400 tabular-nums mt-0.5">4 Nos.</div>
+                      <span className="text-[10px] text-slate-300 tabular-nums">1.86 m² • 0.037 m³</span>
                     </div>
 
-                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
-                      <span className="text-[9px] text-blue-200 block uppercase font-mono">Resurfacing Scope</span>
-                      <div className="text-xs font-bold text-cyan-300 font-mono mt-0.5">120 Meters</div>
+                    <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                      <span className="text-[10px] text-blue-200 block uppercase font-medium">Resurfacing Scope</span>
+                      <div className="text-xs font-bold text-cyan-300 tabular-nums mt-0.5">120 Meters</div>
                       <span className="text-[10px] text-slate-300">Ch: 0+000 to 0+120</span>
                     </div>
 
-                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
-                      <span className="text-[9px] text-blue-200 block uppercase font-mono">Estimated Repair Cost</span>
-                      <div className="text-xs font-bold text-emerald-400 font-mono mt-0.5">₹28.20 Lakh</div>
+                    <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                      <span className="text-[10px] text-blue-200 block uppercase font-medium">Estimated Repair Cost</span>
+                      <div className="text-xs font-bold text-emerald-400 tabular-nums mt-0.5">₹28.20 Lakh</div>
                       <span className="text-[10px] text-slate-300">MoRTH Schedule of Rates</span>
                     </div>
                   </div>
@@ -713,11 +714,11 @@ export const NSVDetailsPage: React.FC = () => {
 
               {/* 1. Snap-Taking Flight Map & Waypoints (Section 1) */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
+                <div className="flex items-center justify-between px-0">
                   <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                     1. Drone Flight Corridor Inspection Runway &amp; Waypoints (120m)
                   </h3>
-                  <span className="text-[11px] text-slate-500 font-mono">
+                  <span className="text-[11px] text-slate-500 font-sans tabular-nums truncate max-w-xs sm:max-w-md text-right">
                     Corridor: {details.roadCode} ({details.section})
                   </span>
                 </div>
@@ -732,11 +733,11 @@ export const NSVDetailsPage: React.FC = () => {
 
               {/* 2. Lane Numbered Potholes & Defect Inspection Gallery (Section 2 directly after Section 1) */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
+                <div className="flex items-center justify-between px-0">
                   <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                     2. Lane Numbered Potholes &amp; Inspection Gallery
                   </h3>
-                  <span className="text-[11px] text-slate-500 font-mono">
+                  <span className="text-[11px] text-slate-500 font-sans tabular-nums truncate max-w-xs sm:max-w-md text-right">
                     {details.potholeInspections.length} Verified Potholes • 20mm Max Depth
                   </span>
                 </div>
@@ -1037,6 +1038,6 @@ export const NSVDetailsPage: React.FC = () => {
           </div>,
           document.body
         )}
-    </div>
+    </PageContainer>
   );
 };

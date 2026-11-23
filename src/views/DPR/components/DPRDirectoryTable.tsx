@@ -262,7 +262,7 @@ export const DPRDirectoryTable: React.FC<DPRDirectoryTableProps> = ({
       )}
 
       {/* Directory Table Section */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden w-full max-w-full min-w-0">
         {/* Table Toolbar */}
         <div className="p-4 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
@@ -319,8 +319,8 @@ export const DPRDirectoryTable: React.FC<DPRDirectoryTableProps> = ({
         </div>
 
         {/* The Master Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+        <div className="w-full max-w-full overflow-x-auto min-w-0">
+          <table className="w-full min-w-[950px] text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider">
                 <th className="p-3">Corridor & DPR No.</th>

@@ -10,6 +10,7 @@ import { DPRDirectoryTable } from './components/DPRDirectoryTable';
 import { TenderNoticeModal } from './components/TenderNoticeModal';
 import { Mar1111DprDocumentView } from './components/Mar1111DprDocumentView';
 import { Mar1111TenderDocumentView } from './components/Mar1111TenderDocumentView';
+import { PageContainer } from '../../common/PageContainer';
 import {
   FileText,
   FileSpreadsheet,
@@ -456,7 +457,7 @@ export const DPRPage: React.FC = () => {
   const contingencyAmount = Math.round(subTotalBOQ * 0.03);
 
   return (
-    <div className="space-y-6 w-full pb-12 font-sans">
+    <PageContainer className="pb-12 font-sans">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-5 right-5 z-50 p-3 bg-white border border-slate-300 rounded-lg shadow-lg text-xs font-semibold text-slate-800 flex items-center gap-2 animate-in fade-in">
@@ -1866,6 +1867,6 @@ export const DPRPage: React.FC = () => {
           )}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 };
