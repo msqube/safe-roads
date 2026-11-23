@@ -755,7 +755,7 @@ export const Panorama360Viewer: React.FC<Panorama360ViewerProps> = ({
             </div>
 
             {/* Right: Structural Pavement Layer Breakdown */}
-            <div className="w-full md:w-80 bg-slate-900 border border-slate-700 rounded-lg p-3.5 space-y-3 flex flex-col justify-between">
+            <div className="w-full md:w-80 bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between border-b border-slate-700 pb-2 mb-2">
                   <span className="text-xs font-bold text-white uppercase tracking-wider">

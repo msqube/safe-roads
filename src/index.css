@@ -3,15 +3,47 @@
 @import "leaflet/dist/leaflet.css";
 
 /* Base reset & typography */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body,
 #root {
-  height: 100%;
+  width: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
+}
+
+body {
+  min-width: 320px;
   background-color: #f8fafc;
   color: #0f172a;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove heavy default browser focus outline on clicked buttons/tabs */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid rgba(26, 115, 232, 0.4) !important;
+  outline-offset: 1px !important;
 }
 
 /* Global Custom Visible Scrollbar across whole project */
@@ -78,7 +110,14 @@ body,
 [id*="netlify"],
 [class*="netlify-drawer"],
 iframe[src*="netlify"],
-div[data-testid*="netlify"] {
+div[data-testid*="netlify"],
+a[href*="netlify.com"],
+div[style*="position: fixed"][style*="bottom"] button[aria-label*="Netlify"],
+div[class*="netlify"],
+.netlify-badge-container,
+div:has(> a[href*="netlify.com"]),
+div[class*="netlify-feedback"],
+div[id*="netlify-feedback"] {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;

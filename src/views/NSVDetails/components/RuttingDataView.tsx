@@ -50,12 +50,12 @@ export const RuttingDataView: React.FC<RuttingDataViewProps> = ({ details }) => 
   ];
 
   return (
-    <div className="space-y-6 text-xs text-slate-800">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-slate-900 text-white p-5 rounded-xl border border-amber-800/40 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+    <div className="space-y-4 text-xs text-slate-800">
+      {/* Header Banner - Standard Padding p-4 */}
+      <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-slate-900 text-white p-4 rounded-xl border border-amber-800/40 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/30 text-amber-200 border border-amber-400/40">
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/30 text-amber-200 border border-amber-400/40 tabular-nums">
               TRANSVERSE RUTTING ANALYSIS
             </span>
             <span className="text-xs font-mono text-slate-300">
@@ -70,15 +70,15 @@ export const RuttingDataView: React.FC<RuttingDataViewProps> = ({ details }) => 
           </p>
         </div>
 
-        <div className="p-3 bg-amber-950/80 rounded-lg border border-amber-500/40 text-right font-mono text-xs">
-          <span className="text-[10px] text-amber-300 block uppercase">AVG RUT DEPTH</span>
-          <span className="text-2xl font-black text-amber-400">20 <span className="text-xs font-normal text-amber-300">mm</span></span>
+        <div className="p-3 bg-amber-950/80 rounded-xl border border-amber-500/40 text-right text-xs">
+          <span className="text-[10px] text-amber-300 block uppercase font-medium">AVG RUT DEPTH</span>
+          <span className="text-2xl font-bold tabular-nums text-amber-400">20 <span className="text-sm font-normal text-amber-300">mm</span></span>
           <span className="text-[10px] text-amber-300 block font-semibold mt-0.5">Cold Milling Required</span>
         </div>
       </div>
 
       {/* 5.1 Rutting Assessment */}
-      <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs space-y-3">
+      <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm space-y-4">
         <div className="flex items-center gap-2">
           <TrendingDown className="w-4 h-4 text-amber-600" />
           <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
@@ -89,28 +89,28 @@ export const RuttingDataView: React.FC<RuttingDataViewProps> = ({ details }) => 
           Rutting is a longitudinal depression within wheel paths caused by permanent deformation of pavement layers. The reference NSV report describes transverse laser profiling as the measurement approach. The assessed average rut depth along the outer commercial vehicle wheelpath is <strong>20 mm</strong>, requiring mechanized cold milling prior to resurfacing.
         </p>
 
-        <div className="overflow-x-auto rounded-lg border border-slate-200">
-          <table className="w-full text-left border-collapse text-xs">
-            <tbody className="divide-y divide-slate-100 text-[11px]">
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50 w-1/3">Average rut depth</td>
-                <td className="p-2.5 font-bold font-mono text-amber-700">20 mm (outer wheelpath along Lane 1)</td>
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <table className="table-fixed w-full text-left border-collapse text-xs">
+            <tbody className="divide-y divide-slate-100 text-xs">
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="w-1/3 px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Average rut depth</td>
+                <td className="w-2/3 px-4 py-3 align-middle font-bold tabular-nums text-amber-700">20 mm (outer wheelpath along Lane 1)</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Maximum rut depth</td>
-                <td className="p-2.5 font-bold font-mono text-red-600">20 mm (localized at PH-01 to PH-04 depressions)</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Maximum rut depth</td>
+                <td className="px-4 py-3 align-middle font-bold tabular-nums text-red-600">20 mm (localized at PH-01 to PH-04 depressions)</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Measurement interval</td>
-                <td className="p-2.5 font-mono text-slate-900">Recommended chainage-wise at 20 m intervals</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Measurement interval</td>
+                <td className="px-4 py-3 align-middle tabular-nums text-slate-900">Recommended chainage-wise at 20 m intervals</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Classification</td>
-                <td className="p-2.5 text-red-700 font-bold">Critical rutting requiring 40mm cold milling</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Classification</td>
+                <td className="px-4 py-3 align-middle text-red-700 font-bold">Critical rutting requiring 40mm cold milling</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Engineering use</td>
-                <td className="p-2.5 text-slate-700">Assess water ponding, deformation and need for leveling / strengthening</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Engineering use</td>
+                <td className="px-4 py-3 align-middle text-slate-700">Assess water ponding, deformation and need for leveling / strengthening</td>
               </tr>
             </tbody>
           </table>
@@ -118,40 +118,40 @@ export const RuttingDataView: React.FC<RuttingDataViewProps> = ({ details }) => 
       </div>
 
       {/* 5.2 Field Data Sheet – Sample Layout */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-[#1a73e8]" />
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="text-sm font-bold text-slate-900">
               5.2 Transverse Rut Depth Schedule (20m Intervals)
             </h4>
           </div>
-          <span className="text-[10px] font-mono text-slate-500">6 Intervals (0+000 to 0+120)</span>
+          <span className="text-xs text-slate-500">6 Intervals (0+000 to 0+120)</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-slate-100 text-slate-700 font-bold text-[11px]">
+          <table className="table-fixed w-full text-left border-collapse text-xs">
+            <thead className="bg-slate-100 text-slate-700 font-semibold text-xs border-b border-slate-200">
               <tr>
-                <th className="p-2.5 border-b border-slate-200">Start Ch.</th>
-                <th className="p-2.5 border-b border-slate-200">End Ch.</th>
-                <th className="p-2.5 border-b border-slate-200">Left Rut</th>
-                <th className="p-2.5 border-b border-slate-200">Right Rut</th>
-                <th className="p-2.5 border-b border-slate-200">Avg Rut (mm)</th>
-                <th className="p-2.5 border-b border-slate-200">Max Rut (mm)</th>
-                <th className="p-2.5 border-b border-slate-200">Remarks &amp; Engineering Field Status</th>
+                <th className="w-[11%] px-4 py-3 align-middle">Start Ch.</th>
+                <th className="w-[11%] px-4 py-3 align-middle">End Ch.</th>
+                <th className="w-[12%] px-4 py-3 align-middle">Left Rut</th>
+                <th className="w-[12%] px-4 py-3 align-middle">Right Rut</th>
+                <th className="w-[14%] px-4 py-3 align-middle">Avg Rut (mm)</th>
+                <th className="w-[14%] px-4 py-3 align-middle">Max Rut (mm)</th>
+                <th className="w-[26%] px-4 py-3 align-middle">Remarks &amp; Engineering Field Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {ruttingSheet.map((r, i) => (
-                <tr key={i} className="hover:bg-slate-50">
-                  <td className="p-2.5 font-bold text-slate-900">{r.startCh}</td>
-                  <td className="p-2.5 font-bold text-slate-900">{r.endCh}</td>
-                  <td className="p-2.5 text-slate-700">{r.leftRut}</td>
-                  <td className="p-2.5 text-slate-700">{r.rightRut}</td>
-                  <td className="p-2.5 text-amber-700 font-bold">{r.avgRut}</td>
-                  <td className="p-2.5 text-red-600 font-bold">{r.maxRut}</td>
-                  <td className="p-2.5 font-sans text-slate-600">{r.remarks}</td>
+                <tr key={i} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 align-middle font-bold text-slate-900 tabular-nums">{r.startCh}</td>
+                  <td className="px-4 py-3 align-middle font-bold text-slate-900 tabular-nums">{r.endCh}</td>
+                  <td className="px-4 py-3 align-middle text-slate-700 tabular-nums">{r.leftRut}</td>
+                  <td className="px-4 py-3 align-middle text-slate-700 tabular-nums">{r.rightRut}</td>
+                  <td className="px-4 py-3 align-middle text-amber-700 font-bold tabular-nums">{r.avgRut}</td>
+                  <td className="px-4 py-3 align-middle text-red-600 font-bold tabular-nums">{r.maxRut}</td>
+                  <td className="px-4 py-3 align-middle text-slate-600">{r.remarks}</td>
                 </tr>
               ))}
             </tbody>
@@ -160,33 +160,33 @@ export const RuttingDataView: React.FC<RuttingDataViewProps> = ({ details }) => 
       </div>
 
       {/* SECTION 6: ROAD INVENTORY & GEOMETRY */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <Building className="w-4 h-4 text-purple-600" />
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="text-sm font-bold text-slate-900">
               Section 6: Road Inventory &amp; Geometry Record
             </h4>
           </div>
-          <span className="text-[10px] font-mono text-purple-700 font-bold">NKDA Road MAR 1111</span>
+          <span className="text-xs text-purple-700 font-semibold">NKDA Road MAR 1111</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-slate-100 text-slate-700 font-bold text-[11px]">
+          <table className="table-fixed w-full text-left border-collapse text-xs">
+            <thead className="bg-slate-100 text-slate-700 font-semibold text-xs border-b border-slate-200">
               <tr>
-                <th className="p-2.5 border-b border-slate-200 w-1/3">Inventory Parameter</th>
-                <th className="p-2.5 border-b border-slate-200">Current Specification &amp; Dimension</th>
-                <th className="p-2.5 border-b border-slate-200 w-1/5">Status</th>
+                <th className="w-1/3 px-4 py-3 align-middle">Inventory Parameter</th>
+                <th className="w-1/2 px-4 py-3 align-middle">Current Specification &amp; Dimension</th>
+                <th className="w-[17%] px-4 py-3 align-middle">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-[11px]">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {inventorySummary.map((inv, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="p-2.5 font-bold text-slate-800">{inv.param}</td>
-                  <td className="p-2.5 text-slate-900 font-medium">{inv.value}</td>
-                  <td className="p-2.5">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 align-middle font-bold text-slate-800">{inv.param}</td>
+                  <td className="px-4 py-3 align-middle text-slate-900 font-medium">{inv.value}</td>
+                  <td className="px-4 py-3 align-middle">
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
                       {inv.status}
                     </span>
                   </td>
@@ -198,35 +198,35 @@ export const RuttingDataView: React.FC<RuttingDataViewProps> = ({ details }) => 
       </div>
 
       {/* Annexure 3: Pre-Issue Field Verification Checklist */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="text-sm font-bold text-slate-900">
               Section 7: Statutory Field Verification &amp; Quality Checklist
             </h4>
           </div>
-          <span className="text-[10px] font-mono text-emerald-700 font-bold">8 Mandatory Checks</span>
+          <span className="text-xs text-emerald-700 font-semibold">8 Mandatory Checks</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-slate-100 text-slate-700 font-bold text-[11px]">
+          <table className="table-fixed w-full text-left border-collapse text-xs">
+            <thead className="bg-slate-100 text-slate-700 font-semibold text-xs border-b border-slate-200">
               <tr>
-                <th className="p-2.5 border-b border-slate-200 w-12 text-center">#</th>
-                <th className="p-2.5 border-b border-slate-200 w-2/5">Verification Requirement</th>
-                <th className="p-2.5 border-b border-slate-200">Technical Details / Compliance Output</th>
-                <th className="p-2.5 border-b border-slate-200 w-28 text-center">Status</th>
+                <th className="w-12 px-4 py-3 align-middle text-center">#</th>
+                <th className="w-2/5 px-4 py-3 align-middle">Verification Requirement</th>
+                <th className="px-4 py-3 align-middle">Technical Details / Compliance Output</th>
+                <th className="w-28 px-4 py-3 align-middle text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-[11px]">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {checklistItems.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50">
-                  <td className="p-2.5 font-mono font-bold text-slate-600 text-center">{item.id}</td>
-                  <td className="p-2.5 font-semibold text-slate-900">{item.req}</td>
-                  <td className="p-2.5 text-slate-700 font-mono text-[10px]">{item.details}</td>
-                  <td className="p-2.5 text-center">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 align-middle font-bold text-slate-600 text-center tabular-nums">{item.id}</td>
+                  <td className="px-4 py-3 align-middle font-semibold text-slate-900">{item.req}</td>
+                  <td className="px-4 py-3 align-middle text-slate-700">{item.details}</td>
+                  <td className="px-4 py-3 align-middle text-center">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
                       <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                       <span>{item.status}</span>
                     </span>

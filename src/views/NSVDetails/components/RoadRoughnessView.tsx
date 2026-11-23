@@ -35,12 +35,12 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
   ];
 
   return (
-    <div className="space-y-6 text-xs text-slate-800">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-red-900 via-slate-900 to-slate-900 text-white p-5 rounded-xl border border-red-800/40 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+    <div className="space-y-4 text-xs text-slate-800">
+      {/* Header Banner - Standard Padding p-4 */}
+      <div className="bg-gradient-to-r from-red-900 via-slate-900 to-slate-900 text-white p-4 rounded-xl border border-red-800/40 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-500/30 text-red-200 border border-red-400/40">
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/30 text-red-200 border border-red-400/40 tabular-nums">
               LASER PROFILOMETER TELEMETRY
             </span>
             <span className="text-xs font-mono text-slate-300">
@@ -55,15 +55,15 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
           </p>
         </div>
 
-        <div className="p-3 bg-red-950/80 rounded-lg border border-red-500/40 text-right font-mono text-xs">
-          <span className="text-[10px] text-red-300 block uppercase">MEAN SEGMENT IRI</span>
-          <span className="text-2xl font-black text-white">5.20 <span className="text-xs font-normal text-red-300">m/km</span></span>
+        <div className="p-3 bg-red-950/80 rounded-xl border border-red-500/40 text-right text-xs">
+          <span className="text-[10px] text-red-300 block uppercase font-medium">MEAN SEGMENT IRI</span>
+          <span className="text-2xl font-bold tabular-nums text-white">5.20 <span className="text-sm font-normal text-red-300">m/km</span></span>
           <span className="text-[10px] text-red-300 block font-semibold mt-0.5">Very Poor Band (&gt;5.0)</span>
         </div>
       </div>
 
       {/* 4.1 Roughness Measurements */}
-      <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-xs space-y-1.5">
+      <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm space-y-2">
         <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
           <Activity className="w-4 h-4 text-[#1a73e8]" />
           <span>4.1 Longitudinal Roughness (IRI) Principles</span>
@@ -74,51 +74,51 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
       </div>
 
       {/* 4.2 Sample IRI Result Table */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <Table className="w-4 h-4 text-[#1a73e8]" />
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="text-sm font-bold text-slate-900">
               4.2 Longitudinal Roughness (IRI) Survey Results
             </h4>
           </div>
-          <span className="text-[11px] font-mono text-slate-500">120m Priority Resurfacing Segment</span>
+          <span className="text-xs text-slate-500">120m Priority Resurfacing Segment</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <tbody className="divide-y divide-slate-100 text-[11px]">
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50 w-1/3">Road</td>
-                <td className="p-2.5 font-mono font-bold text-slate-900">NKDA Road MAR 1111</td>
+          <table className="table-fixed w-full text-left border-collapse text-xs">
+            <tbody className="divide-y divide-slate-100 text-xs">
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="w-1/3 px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Road</td>
+                <td className="w-2/3 px-4 py-3 align-middle font-bold text-slate-900">NKDA Road MAR 1111</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Provisional segment chainage</td>
-                <td className="p-2.5 font-mono text-slate-900">0+000 to 0+120</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Provisional segment chainage</td>
+                <td className="px-4 py-3 align-middle tabular-nums text-slate-900">0+000 to 0+120</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Segment length</td>
-                <td className="p-2.5 font-mono text-slate-900">120 m</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Segment length</td>
+                <td className="px-4 py-3 align-middle tabular-nums text-slate-900">120 m</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Left wheel path IRI (sample mean)</td>
-                <td className="p-2.5 font-mono font-bold text-blue-700">5.10 m/km</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Left wheel path IRI (sample mean)</td>
+                <td className="px-4 py-3 align-middle font-bold tabular-nums text-blue-700">5.10 m/km</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Right wheel path IRI (sample mean)</td>
-                <td className="p-2.5 font-mono font-bold text-red-600">5.30 m/km</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Right wheel path IRI (sample mean)</td>
+                <td className="px-4 py-3 align-middle font-bold tabular-nums text-red-600">5.30 m/km</td>
               </tr>
-              <tr className="hover:bg-slate-50 bg-red-50/50">
-                <td className="p-2.5 font-bold text-red-950 bg-red-100/50">Average segment IRI</td>
-                <td className="p-2.5 font-mono font-black text-red-600 text-sm">5.20 m/km</td>
+              <tr className="hover:bg-slate-50 transition-colors bg-red-50/50">
+                <td className="px-4 py-3 align-middle font-bold text-red-950 bg-red-100/50">Average segment IRI</td>
+                <td className="px-4 py-3 align-middle font-bold tabular-nums text-red-600 text-sm">5.20 m/km</td>
               </tr>
-              <tr className="hover:bg-slate-50">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">IRI classification</td>
-                <td className="p-2.5 font-bold text-red-700">Very Poor / Very Rough (&gt;5.0 m/km)</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">IRI classification</td>
+                <td className="px-4 py-3 align-middle font-bold text-red-700">Very Poor / Very Rough (&gt;5.0 m/km)</td>
               </tr>
-              <tr className="hover:bg-slate-50 bg-emerald-50/40">
-                <td className="p-2.5 font-bold text-slate-700 bg-slate-50">Recommended action</td>
-                <td className="p-2.5 font-semibold text-emerald-800">
+              <tr className="hover:bg-slate-50 transition-colors bg-emerald-50/40">
+                <td className="px-4 py-3 align-middle font-semibold text-slate-700 bg-slate-50/70">Recommended action</td>
+                <td className="px-4 py-3 align-middle font-semibold text-emerald-800">
                   Prioritize detailed pavement investigation and resurfacing / strengthening design (₹28.20 Lakhs)
                 </td>
               </tr>
@@ -128,15 +128,15 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
       </div>
 
       {/* 4.3 Chainage-wise Interpretation & Visual IRI Profile Graph */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs p-5 space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-blue-600" />
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="text-sm font-bold text-slate-900">
               4.3 Chainage-wise Interpretation &amp; Differential Wheelpath Graph
             </h4>
           </div>
-          <span className="text-[10px] font-mono text-slate-500">Six 20m Sample Intervals</span>
+          <span className="text-xs text-slate-500">Six 20m Sample Intervals</span>
         </div>
 
         <p className="text-slate-700 leading-relaxed">
@@ -144,10 +144,10 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
         </p>
 
         {/* Visual Graph Representation matching diagram */}
-        <div className="p-5 bg-slate-900 rounded-xl text-white space-y-4 border border-slate-700">
+        <div className="p-4 bg-slate-900 rounded-xl text-white space-y-4 border border-slate-700">
           <div className="flex items-center justify-between text-xs">
             <span className="font-bold text-slate-200">Illustrative IRI Profile – 120 m Segment</span>
-            <div className="flex items-center gap-4 text-[11px] font-mono">
+            <div className="flex items-center gap-4 text-[11px] tabular-nums">
               <div className="flex items-center gap-1.5">
                 <span className="w-3 h-1 bg-blue-400 rounded-full" />
                 <span className="text-blue-300">Blue: Left Wheel Path 5.10 m/km</span>
@@ -170,11 +170,11 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
               <line x1="50" y1="140" x2="570" y2="140" stroke="#475569" strokeWidth="1.5" />
 
               {/* Y-Axis Labels */}
-              <text x="25" y="24" fill="#94a3b8" fontSize="10" fontFamily="monospace">5.4</text>
-              <text x="25" y="54" fill="#94a3b8" fontSize="10" fontFamily="monospace">5.2</text>
-              <text x="25" y="84" fill="#f87171" fontSize="10" fontFamily="monospace" fontWeight="bold">5.0*</text>
-              <text x="25" y="114" fill="#94a3b8" fontSize="10" fontFamily="monospace">4.8</text>
-              <text x="25" y="144" fill="#94a3b8" fontSize="10" fontFamily="monospace">4.6</text>
+              <text x="25" y="24" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">5.4</text>
+              <text x="25" y="54" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">5.2</text>
+              <text x="25" y="84" fill="#f87171" fontSize="10" fontFamily="sans-serif" fontWeight="bold">5.0*</text>
+              <text x="25" y="114" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">4.8</text>
+              <text x="25" y="144" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">4.6</text>
 
               {/* Critical Threshold 5.0 Line */}
               <line x1="50" y1="80" x2="570" y2="80" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="4 2" />
@@ -199,59 +199,59 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
               <circle cx="570" cy="65" r="4" fill="#3b82f6" />
 
               {/* X-Axis Ticks & Labels */}
-              <text x="48" y="155" fill="#94a3b8" fontSize="10" fontFamily="monospace">0m</text>
-              <text x="145" y="155" fill="#94a3b8" fontSize="10" fontFamily="monospace">20m</text>
-              <text x="250" y="155" fill="#94a3b8" fontSize="10" fontFamily="monospace">40m</text>
-              <text x="354" y="155" fill="#94a3b8" fontSize="10" fontFamily="monospace">60m</text>
-              <text x="458" y="155" fill="#94a3b8" fontSize="10" fontFamily="monospace">80m</text>
-              <text x="555" y="155" fill="#94a3b8" fontSize="10" fontFamily="monospace">120m</text>
+              <text x="48" y="155" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">0m</text>
+              <text x="145" y="155" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">20m</text>
+              <text x="250" y="155" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">40m</text>
+              <text x="354" y="155" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">60m</text>
+              <text x="458" y="155" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">80m</text>
+              <text x="555" y="155" fill="#94a3b8" fontSize="10" fontFamily="sans-serif">120m</text>
             </svg>
           </div>
         </div>
       </div>
 
       {/* 4.4 IRI Classification Matrix */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <Sliders className="w-4 h-4 text-purple-600" />
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="text-sm font-bold text-slate-900">
               4.4 Standard IRI Classification Matrix
             </h4>
           </div>
-          <span className="text-[10px] text-slate-500 font-mono">Reference: MoRTH / IRC:SP:16-2019</span>
+          <span className="text-xs text-slate-500">Reference: MoRTH / IRC:SP:16-2019</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-slate-100 text-slate-700 font-bold text-[11px]">
+          <table className="table-fixed w-full text-left border-collapse text-xs">
+            <thead className="bg-slate-100 text-slate-700 font-semibold text-xs border-b border-slate-200">
               <tr>
-                <th className="p-3 border-b border-slate-200">IRI Band (m/km)</th>
-                <th className="p-3 border-b border-slate-200">Condition Classification</th>
-                <th className="p-3 border-b border-slate-200">Ride Quality Experience</th>
-                <th className="p-3 border-b border-slate-200">Corridor Application Status</th>
+                <th className="w-[20%] px-4 py-3 align-middle">IRI Band (m/km)</th>
+                <th className="w-[22%] px-4 py-3 align-middle">Condition Classification</th>
+                <th className="w-[26%] px-4 py-3 align-middle">Ride Quality Experience</th>
+                <th className="w-[32%] px-4 py-3 align-middle">Corridor Application Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-[11px]">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {iriClassification.map((c, i) => {
                 const isCurrent = c.range === 'Greater than 5.0';
                 return (
-                  <tr key={i} className={isCurrent ? 'bg-red-50/80 font-bold' : 'hover:bg-slate-50'}>
-                    <td className="p-3 font-mono font-bold text-slate-900">{c.range}</td>
-                    <td className="p-3">
+                  <tr key={i} className={isCurrent ? 'bg-red-50/80 font-bold' : 'hover:bg-slate-50 transition-colors'}>
+                    <td className="px-4 py-3 align-middle tabular-nums font-bold text-slate-900">{c.range}</td>
+                    <td className="px-4 py-3 align-middle">
                       <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${c.badge}`}>
                         {c.condition}
                       </span>
                     </td>
-                    <td className="p-3 font-medium text-slate-800">{c.rideQuality}</td>
-                    <td className="p-3">
+                    <td className="px-4 py-3 align-middle font-medium text-slate-800">{c.rideQuality}</td>
+                    <td className="px-4 py-3 align-middle">
                       {isCurrent ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-600 text-white font-mono text-[10px] font-black shadow-xs animate-pulse">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold shadow-sm animate-pulse">
                           <AlertTriangle className="w-3 h-3" />
                           <span>ACTIVE: NKDA Road MAR 1111 (5.20 m/km)</span>
                         </span>
                       ) : (
-                        <span className="text-slate-400 text-[10px] font-mono">—</span>
+                        <span className="text-slate-400 text-xs">—</span>
                       )}
                     </td>
                   </tr>
@@ -263,45 +263,45 @@ export const RoadRoughnessView: React.FC<RoadRoughnessViewProps> = ({ details })
       </div>
 
       {/* Chainage-Wise Roughness Schedule */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <FileCheck className="w-4 h-4 text-blue-600" />
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h4 className="text-sm font-bold text-slate-900">
               Chainage-wise 20m Interval Roughness Schedule
             </h4>
           </div>
-          <span className="text-[10px] font-mono text-slate-500">6 Consecutive Intervals (Km 0+000 to Km 0+120)</span>
+          <span className="text-xs text-slate-500">6 Consecutive Intervals (Km 0+000 to Km 0+120)</span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-slate-100 text-slate-700 font-bold text-[11px]">
+          <table className="table-fixed w-full text-left border-collapse text-xs">
+            <thead className="bg-slate-100 text-slate-700 font-semibold text-xs border-b border-slate-200">
               <tr>
-                <th className="p-2.5 border-b border-slate-200">Section</th>
-                <th className="p-2.5 border-b border-slate-200">Start Ch.</th>
-                <th className="p-2.5 border-b border-slate-200">End Ch.</th>
-                <th className="p-2.5 border-b border-slate-200">Dir. / Lane</th>
-                <th className="p-2.5 border-b border-slate-200">Left IRI</th>
-                <th className="p-2.5 border-b border-slate-200">Right IRI</th>
-                <th className="p-2.5 border-b border-slate-200">Avg IRI (m/km)</th>
-                <th className="p-2.5 border-b border-slate-200">Speed</th>
-                <th className="p-2.5 border-b border-slate-200">Band</th>
+                <th className="w-[10%] px-4 py-3 align-middle">Section</th>
+                <th className="w-[11%] px-4 py-3 align-middle">Start Ch.</th>
+                <th className="w-[11%] px-4 py-3 align-middle">End Ch.</th>
+                <th className="w-[13%] px-4 py-3 align-middle">Dir. / Lane</th>
+                <th className="w-[11%] px-4 py-3 align-middle">Left IRI</th>
+                <th className="w-[11%] px-4 py-3 align-middle">Right IRI</th>
+                <th className="w-[13%] px-4 py-3 align-middle">Avg IRI (m/km)</th>
+                <th className="w-[9%] px-4 py-3 align-middle">Speed</th>
+                <th className="w-[11%] px-4 py-3 align-middle">Band</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+            <tbody className="divide-y divide-slate-100 text-xs">
               {iriIntervals.map((row, idx) => (
-                <tr key={idx} className="hover:bg-slate-50">
-                  <td className="p-2.5 text-slate-700 font-sans font-semibold">NKDA-01</td>
-                  <td className="p-2.5 text-slate-900 font-bold">{row.startCh}</td>
-                  <td className="p-2.5 text-slate-900 font-bold">{row.endCh}</td>
-                  <td className="p-2.5 text-slate-600 font-sans">{row.dir} / L{row.lane}</td>
-                  <td className="p-2.5 text-blue-700 font-semibold">{row.leftIri}</td>
-                  <td className="p-2.5 text-red-600 font-semibold">{row.rightIri}</td>
-                  <td className="p-2.5 text-red-700 font-black">{row.avgIri}</td>
-                  <td className="p-2.5 text-slate-500">{row.speed}</td>
-                  <td className="p-2.5 font-sans">
-                    <span className="px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-bold text-[10px]">
+                <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 align-middle text-slate-700 font-semibold">NKDA-01</td>
+                  <td className="px-4 py-3 align-middle text-slate-900 font-bold tabular-nums">{row.startCh}</td>
+                  <td className="px-4 py-3 align-middle text-slate-900 font-bold tabular-nums">{row.endCh}</td>
+                  <td className="px-4 py-3 align-middle text-slate-600">{row.dir} / L{row.lane}</td>
+                  <td className="px-4 py-3 align-middle text-blue-700 font-semibold tabular-nums">{row.leftIri}</td>
+                  <td className="px-4 py-3 align-middle text-red-600 font-semibold tabular-nums">{row.rightIri}</td>
+                  <td className="px-4 py-3 align-middle text-red-700 font-bold tabular-nums">{row.avgIri}</td>
+                  <td className="px-4 py-3 align-middle text-slate-500 tabular-nums">{row.speed}</td>
+                  <td className="px-4 py-3 align-middle">
+                    <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-semibold text-[11px]">
                       {row.band}
                     </span>
                   </td>

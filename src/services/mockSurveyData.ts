@@ -489,7 +489,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
       const latOffset = ((i * 17) % 50 - 25) * 0.0007;
       const lngOffset = ((i * 23) % 50 - 25) * 0.0007;
       const gpsLatitude = i === 1 ? 22.58210 : parseFloat((corridor.baseLat + latOffset).toFixed(5));
-      const gpsLongitude = i === 1 ? 88.47305 : parseFloat((corridor.baseLng + lngOffset).toFixed(5));
+      const gpsLongitude = i === 1 ? 88.47300 : parseFloat((corridor.baseLng + lngOffset).toFixed(5));
       const distanceKm = i === 1 ? 0.12 : parseFloat((0.8 + ((i * 1.3) % 4.2)).toFixed(1));
       const surveyTime = new Date(now.getTime() - i * 3600 * 1000 * 3.5).toISOString();
 
@@ -990,7 +990,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
                 id: 'SNP-01',
                 snapNumber: 1,
                 chainage: 'Km 0+018',
-                gps: { lat: 22.58168, lng: 88.47288 },
+                gps: { lat: 22.58210, lng: 88.47220 },
                 timestamp: '11:32:10',
                 droneAltitudeMeters: 30.5,
                 droneSpeedKmh: 12.0,
@@ -1003,7 +1003,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
                 id: 'SNP-02',
                 snapNumber: 2,
                 chainage: 'Km 0+045',
-                gps: { lat: 22.58195, lng: 88.47298 },
+                gps: { lat: 22.58210, lng: 88.47250 },
                 timestamp: '11:33:25',
                 droneAltitudeMeters: 30.2,
                 droneSpeedKmh: 12.5,
@@ -1016,7 +1016,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
                 id: 'SNP-03',
                 snapNumber: 3,
                 chainage: 'Km 0+078',
-                gps: { lat: 22.58232, lng: 88.47312 },
+                gps: { lat: 22.58210, lng: 88.47290 },
                 timestamp: '11:34:40',
                 droneAltitudeMeters: 31.0,
                 droneSpeedKmh: 11.8,
@@ -1029,7 +1029,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
                 id: 'SNP-04',
                 snapNumber: 4,
                 chainage: 'Km 0+105',
-                gps: { lat: 22.58255, lng: 88.47320 },
+                gps: { lat: 22.58210, lng: 88.47320 },
                 timestamp: '11:35:55',
                 droneAltitudeMeters: 30.8,
                 droneSpeedKmh: 12.2,
@@ -1057,7 +1057,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
             id: 'SNP-02',
             snapNumber: 2,
             chainage: 'Km 0+250',
-            gps: { lat: parseFloat((matched.gpsLatitude + 0.0008).toFixed(5)), lng: parseFloat((matched.gpsLongitude + 0.0009).toFixed(5)) },
+            gps: { lat: matched.gpsLatitude, lng: parseFloat((matched.gpsLongitude + 0.0008).toFixed(5)) },
             timestamp: '09:45:34',
             droneAltitudeMeters: 32.1,
             droneSpeedKmh: 14.5,
@@ -1070,7 +1070,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
             id: 'SNP-03',
             snapNumber: 3,
             chainage: 'Km 0+400',
-            gps: { lat: parseFloat((matched.gpsLatitude + 0.0016).toFixed(5)), lng: parseFloat((matched.gpsLongitude + 0.0018).toFixed(5)) },
+            gps: { lat: matched.gpsLatitude, lng: parseFloat((matched.gpsLongitude + 0.0016).toFixed(5)) },
             timestamp: '09:45:58',
             droneAltitudeMeters: 32.8,
             droneSpeedKmh: 14.0,
@@ -1083,7 +1083,7 @@ export function generateDroneThumbnail(seed: number, severity: string, depth: nu
             id: 'SNP-04',
             snapNumber: 4,
             chainage: 'Km 0+550',
-            gps: { lat: parseFloat((matched.gpsLatitude + 0.0024).toFixed(5)), lng: parseFloat((matched.gpsLongitude + 0.0027).toFixed(5)) },
+            gps: { lat: matched.gpsLatitude, lng: parseFloat((matched.gpsLongitude + 0.0024).toFixed(5)) },
             timestamp: '09:46:20',
             droneAltitudeMeters: 31.9,
             droneSpeedKmh: 14.8,

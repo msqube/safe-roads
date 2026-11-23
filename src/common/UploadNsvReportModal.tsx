@@ -33,7 +33,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedPdfName, setUploadedPdfName] = useState<string>('');
-  const [detectedPageCount, setDetectedPageCount] = useState<number>(14);
+  const [detectedPageCount, setDetectedPageCount] = useState<number>(15);
   const [uploadStage, setUploadStage] = useState<'idle' | 'uploading' | 'analyzing' | 'complete'>('idle');
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [analyzingStep, setAnalyzingStep] = useState<number>(0);
@@ -43,14 +43,14 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
     if (isOpen) {
       const isUploaded = localStorage.getItem(`nsv_uploaded_${roadCode}`) === 'true';
       const savedName = localStorage.getItem(`nsv_pdf_name_${roadCode}`);
-      const savedPages = Number(localStorage.getItem(`nsv_pdf_pages_${roadCode}`)) || 14;
+      const savedPages = Number(localStorage.getItem(`nsv_pdf_pages_${roadCode}`)) || 15;
       setDetectedPageCount(savedPages);
       if (isUploaded && savedName) {
         setUploadedPdfName(savedName);
         setExtractionComplete(true);
         setUploadStage('complete');
       } else if (isMar1111) {
-        setUploadedPdfName('NSV_Report_NKDA_Road_MAR_1111_Reference_Style.pdf');
+        setUploadedPdfName('nsv_mar_1111_official_report.pdf');
         setExtractionComplete(true);
         setUploadStage('complete');
       } else {
@@ -66,7 +66,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSimulateExtraction = (filename: string, pageCount: number = 14) => {
+  const handleSimulateExtraction = (filename: string, pageCount: number = 15) => {
     setDetectedPageCount(pageCount);
     setExtractionComplete(false);
     setUploadStage('uploading');
@@ -137,9 +137,9 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
   const handleUseMar1111Pdf = () => {
     setUploadError(null);
-    const fname = 'NSV_Report_NKDA_Road_MAR_1111_Reference_Style.pdf';
+    const fname = 'nsv_mar_1111_official_report.pdf';
     setUploadedPdfName(fname);
-    handleSimulateExtraction(fname, 14);
+    handleSimulateExtraction(fname, 15);
   };
 
   const handleSaveAndClose = () => {
@@ -159,7 +159,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-xl w-full border border-slate-300 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+      <div className="bg-white rounded-2xl max-w-xl w-full border border-slate-300 shadow-2xl overflow-hidden transition-all duration-200">
         {/* Modal Header */}
         <div className="p-4 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -212,7 +212,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
                 <button
                   type="button"
                   onClick={handleUseMar1111Pdf}
-                  className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold rounded-lg transition cursor-pointer text-xs inline-flex items-center gap-1.5 shadow-2xs"
+                  className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold rounded-lg transition cursor-pointer text-xs inline-flex items-center gap-1.5 shadow-sm"
                 >
                   <FileCheck className="w-3.5 h-3.5 text-blue-600" />
                   <span>Use MAR-1111 Report PDF</span>
@@ -246,7 +246,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
           {/* Stage 1: Uploading Report Progress Bar */}
           {uploadStage === 'uploading' && (
-            <div className="p-4 bg-blue-50/90 border border-blue-200 rounded-xl space-y-2.5 animate-in fade-in shadow-xs">
+            <div className="p-4 bg-blue-50/90 border border-blue-200 rounded-xl space-y-2.5 transition-all duration-200 shadow-xs">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-[#1a73e8] border-t-transparent rounded-full animate-spin" />
@@ -276,7 +276,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
           {/* Stage 2: Analyzing Extracted Results from PDF */}
           {uploadStage === 'analyzing' && (
-            <div className="p-4 bg-gradient-to-br from-indigo-50/90 to-blue-50/90 border border-indigo-200 rounded-xl space-y-3 animate-in fade-in shadow-xs">
+            <div className="p-4 bg-gradient-to-br from-indigo-50/90 to-blue-50/90 border border-indigo-200 rounded-xl space-y-3 transition-all duration-200 shadow-xs">
               <div className="flex items-center justify-between border-b border-indigo-100 pb-2">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-indigo-600 animate-spin" />
@@ -292,7 +292,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
               <div className="space-y-2 text-[11px]">
                 <div className="flex items-center gap-2 transition-all">
                   {analyzingStep >= 1 ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                   ) : (
                     <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                   )}
@@ -303,7 +303,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
                 <div className="flex items-center gap-2 transition-all">
                   {analyzingStep >= 2 ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                   ) : analyzingStep === 1 ? (
                     <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                   ) : (
@@ -316,7 +316,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
                 <div className="flex items-center gap-2 transition-all">
                   {analyzingStep >= 3 ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                   ) : analyzingStep === 2 ? (
                     <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                   ) : (
@@ -329,7 +329,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
                 <div className="flex items-center gap-2 transition-all">
                   {analyzingStep >= 4 ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 animate-in zoom-in" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                   ) : analyzingStep === 3 ? (
                     <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                   ) : (
@@ -345,7 +345,7 @@ export const UploadNsvReportModal: React.FC<UploadNsvReportModalProps> = ({
 
           {/* Extracted Parameter Cards */}
           {extractionComplete && uploadStage !== 'uploading' && uploadStage !== 'analyzing' && (
-            <div className="space-y-3 animate-in fade-in">
+            <div className="space-y-3 transition-all duration-200">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-600" />

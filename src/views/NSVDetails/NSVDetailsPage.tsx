@@ -225,9 +225,9 @@ export const NSVDetailsPage: React.FC = () => {
       setActiveTab('parameters');
       setShowPdfModal(true);
       setUploadSuccessBanner(
-        `Official 14-Page NSV Survey Report for NKDA Road MAR 1111 successfully ingested. All sections (Executive Summary, 4 Potholes PH-01..PH-04, Segment IRI 5.20 m/km, 120m segment, Annexures 1-3, and Sign-offs) rendered faithfully.`
+        `Official 15-Page NSV Survey Report for NKDA Road MAR 1111 successfully ingested. All sections (Executive Summary, 4 Potholes PH-01..PH-04, Segment IRI 5.20 m/km, 120m segment, Annexures 1-3, and Sign-offs) rendered faithfully.`
       );
-      showToast('14-Page NSV Report ingested & representation generated!');
+      showToast('15-Page NSV Report ingested & representation generated!');
     }, 900);
   };
 
@@ -254,7 +254,7 @@ export const NSVDetailsPage: React.FC = () => {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="flex flex-col items-center gap-2">
-          <div className="w-8 h-8 border-3 border-[#1a73e8] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#1a73e8] border-t-transparent rounded-full animate-spin" />
           <p className="text-slate-500 text-xs">Loading NSV Details for {roadCode}...</p>
         </div>
       </div>
@@ -262,7 +262,7 @@ export const NSVDetailsPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-full max-w-full min-w-0 space-y-4">
       {/* Toast */}
       {toastMessage && (
         <div className="fixed bottom-5 right-5 z-50 p-3 bg-white border border-slate-300 rounded-lg shadow-lg text-xs font-semibold text-slate-800 flex items-center gap-2">
@@ -281,7 +281,7 @@ export const NSVDetailsPage: React.FC = () => {
 
       {/* Analyzing Telemetry Transient Banner after PDF Upload */}
       {isAnalyzingParsedNsv && (
-        <div className="p-4 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-xl shadow-lg border border-blue-400/30 flex items-center justify-between gap-4 animate-in fade-in">
+        <div className="p-4 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-xl shadow-lg border border-blue-400/30 flex items-center justify-between gap-4 transition-all duration-200">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
             <div>
@@ -303,21 +303,21 @@ export const NSVDetailsPage: React.FC = () => {
       )}
 
       {/* Equal-Padding Header Bar with Title & Corridor Subtitle & Actions */}
-      <div className="w-full bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sans">
+      <div className="w-full max-w-full min-w-0 bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sans">
         {/* Left Side: Line 1 (Survey Report > NSV > NSV Details: CODE [Badge]), Line 2 (Road Name & Section) */}
-        <div className="space-y-1">
+        <div className="space-y-1 min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-slate-400 font-medium hidden sm:inline whitespace-nowrap">
               Survey Report &rsaquo; NSV &rsaquo;
             </span>
-            <h1 className="text-sm font-extrabold text-slate-900 tracking-tight whitespace-nowrap">
+            <h1 className="text-sm font-bold text-slate-900 tracking-tight">
               NSV Details: <span className="font-mono text-blue-600">{details.roadCode}</span>
             </h1>
 
             {isNsvUploaded ? (
               <StatusBadge condition={details.conditionStatus} size="sm" />
             ) : (
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1 shadow-2xs whitespace-nowrap">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1 shadow-sm whitespace-nowrap">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                 <span>NSV Report Pending</span>
               </span>
@@ -331,32 +331,32 @@ export const NSVDetailsPage: React.FC = () => {
         </div>
 
         {/* Right Side: Back Button & Actions neatly in a single horizontal row */}
-        <div className="flex items-center gap-1.5 flex-wrap self-start sm:self-center sm:ml-auto">
+        <div className="flex items-center gap-2 flex-wrap sm:justify-end">
           <button
             onClick={() => navigate('/')}
-            className="h-7 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+            className="h-8 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer inline-flex items-center gap-1.5 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
             title="Back to GIS Dashboard"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
+            <ArrowLeft className="w-4 h-4 text-slate-500" />
             <span>Back</span>
           </button>
 
           {!isNsvUploaded ? (
             <button
               onClick={() => setShowUploadModal(true)}
-              className="h-7 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold text-xs rounded-lg transition cursor-pointer flex items-center gap-1.5 shadow-xs whitespace-nowrap active:scale-98"
+              className="h-8 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-semibold text-xs rounded-lg transition cursor-pointer inline-flex items-center gap-1.5 shadow-sm whitespace-nowrap active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
             >
-              <Upload className="w-3.5 h-3.5" />
+              <Upload className="w-4 h-4" />
               <span>Upload NSV Report</span>
             </button>
           ) : (
             <>
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="h-7 px-2.5 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                className="h-8 px-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer inline-flex items-center gap-1.5 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
                 title="Upload or replace certified report"
               >
-                <Upload className="w-3.5 h-3.5 text-[#1a73e8]" />
+                <Upload className="w-4 h-4 text-[#1a73e8]" />
                 <span className="hidden sm:inline">Upload / Replace Report</span>
                 <span className="sm:hidden">Replace</span>
               </button>
@@ -364,29 +364,29 @@ export const NSVDetailsPage: React.FC = () => {
               {details.hasNsvSurvey && (
                 <button
                   onClick={() => setShowPdfModal(true)}
-                  className="h-7 px-2.5 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                  title="View official certified 14-page report"
+                  className="h-8 px-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer inline-flex items-center gap-1.5 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+                  title="View official certified 15-page report"
                 >
-                  <FileCheck className="w-3.5 h-3.5 text-blue-600" />
-                  <span className="hidden md:inline">Official Report (14 Pages)</span>
-                  <span className="md:hidden">Report (14p)</span>
+                  <FileCheck className="w-4 h-4 text-blue-600" />
+                  <span className="hidden md:inline">Official Report (15 Pages)</span>
+                  <span className="md:hidden">Report (15p)</span>
                 </button>
               )}
 
               <button
                 onClick={handleStartGenerateDpr}
-                className="h-7 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold text-xs rounded-lg transition cursor-pointer flex items-center gap-1.5 shadow-xs whitespace-nowrap active:scale-98"
+                className="h-8 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-semibold text-xs rounded-lg transition cursor-pointer inline-flex items-center gap-1.5 shadow-sm whitespace-nowrap active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
               >
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-4 h-4" />
                 <span>Generate DPR &amp; Release Tender</span>
               </button>
 
               <button
                 onClick={() => window.print()}
-                className="h-7 w-7 flex items-center justify-center bg-white hover:bg-slate-50 text-slate-600 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer shadow-2xs"
+                className="h-8 px-2.5 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-xs rounded-lg border border-slate-300 transition cursor-pointer inline-flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
                 title="Print report"
               >
-                <Printer className="w-3.5 h-3.5" />
+                <Printer className="w-4 h-4" />
               </button>
 
               <button
@@ -398,7 +398,7 @@ export const NSVDetailsPage: React.FC = () => {
                   setIsNsvUploaded(false);
                   showToast('Reset to pending NSV report upload state.');
                 }}
-                className="h-7 px-2 text-[11px] text-slate-400 hover:text-red-600 transition cursor-pointer underline flex items-center"
+                className="h-8 px-2 text-xs text-slate-400 hover:text-red-600 transition cursor-pointer underline inline-flex items-center focus:outline-none"
                 title="Test the upload gate again"
               >
                 Reset Gate
@@ -408,16 +408,16 @@ export const NSVDetailsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* NSV Ingestion Success Banner - Equal Padding p-3.5 */}
+      {/* NSV Ingestion Success Banner - Equal Padding p-4 */}
       {uploadSuccessBanner && (
-        <div className="w-full bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 shadow-2xs text-xs text-emerald-900 flex items-center justify-between gap-3">
+        <div className="w-full max-w-full min-w-0 bg-emerald-50 border border-emerald-300 rounded-xl p-4 shadow-sm text-xs text-emerald-900 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 overflow-hidden min-w-0">
             <CheckCircle2 className="w-4 h-4 text-[#34a853] flex-shrink-0" />
             <span className="font-semibold truncate">{uploadSuccessBanner}</span>
           </div>
           <button
             onClick={() => setUploadSuccessBanner(null)}
-            className="text-emerald-700 hover:text-emerald-900 p-1 cursor-pointer flex-shrink-0"
+            className="text-emerald-700 hover:text-emerald-900 p-1 cursor-pointer flex-shrink-0 focus:outline-none"
           >
             <X className="w-4 h-4" />
           </button>
@@ -439,145 +439,147 @@ export const NSVDetailsPage: React.FC = () => {
         }}
       />
 
-      {/* Horizontally Straight Full-Width Navigation Tabs Toolbar - Equal Padding p-2.5 */}
-      <div className="w-full bg-white border border-slate-200 rounded-xl p-2.5 shadow-2xs flex items-center gap-1.5 font-sans overflow-x-auto no-scrollbar">
-        {/* TAB 1: DRONE SNAP MAP & GALLERY (FIRST TAB AS REQUESTED) */}
-        <button
-          onClick={() => setActiveTab('visuals')}
-          className={`flex-1 min-w-fit px-3 h-7.5 text-xs rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
-            activeTab === 'visuals'
-              ? 'bg-[#1a73e8] text-white font-bold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
-          }`}
-        >
-          <Eye className={`w-3.5 h-3.5 ${activeTab === 'visuals' ? 'text-white' : 'text-blue-600'}`} />
-          <span>Drone Photogrammetry</span>
-          {highlightedDefect && (
-            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-red-100 text-red-700 font-semibold">
-              Focus
-            </span>
-          )}
-        </button>
-
-        {/* TAB 2: ROAD PARAMETERS & SCHEMATIC */}
-        <button
-          onClick={() => setActiveTab('parameters')}
-          className={`flex-1 min-w-fit px-3 h-7.5 text-xs rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
-            activeTab === 'parameters'
-              ? 'bg-[#1a73e8] text-white font-bold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
-          }`}
-        >
-          <ListFilter className="w-3.5 h-3.5" />
-          <span>Road Parameters</span>
-          <span
-            className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-              activeTab === 'parameters'
-                ? 'bg-white/20 text-white'
-                : isNsvUploaded
-                ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-amber-100 text-amber-800'
+      {/* Horizontally Straight Full-Width Equal-Width Navigation Tabs Toolbar */}
+      <div className="w-full max-w-full min-w-0 bg-white border border-slate-200 rounded-xl p-4 shadow-sm overflow-x-auto no-scrollbar">
+        <div className="min-w-[900px] xl:min-w-0 grid grid-cols-6 gap-2">
+          {/* TAB 1: DRONE SNAP MAP & GALLERY */}
+          <button
+            onClick={() => setActiveTab('visuals')}
+            className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none whitespace-nowrap ${
+              activeTab === 'visuals'
+                ? 'bg-[#1a73e8] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            {isNsvUploaded ? '₹28.20L' : 'Pending'}
-          </span>
-        </button>
+            <Eye className={`w-4 h-4 ${activeTab === 'visuals' ? 'text-white' : 'text-blue-600'}`} />
+            <span>Drone Photogrammetry</span>
+            {highlightedDefect && (
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums bg-red-100 text-red-700">
+                Focus
+              </span>
+            )}
+          </button>
 
-        {/* TAB 3: NSV EQUIPMENT & SENSORS */}
-        <button
-          onClick={() => setActiveTab('equipment')}
-          className={`flex-1 min-w-fit px-3 h-7.5 text-xs rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
-            activeTab === 'equipment'
-              ? 'bg-[#1a73e8] text-white font-bold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
-          }`}
-        >
-          <Cpu className={`w-3.5 h-3.5 ${activeTab === 'equipment' ? 'text-white' : 'text-blue-600'}`} />
-          <span>NSV Sensors</span>
-          {!isNsvUploaded && (
+          {/* TAB 2: ROAD PARAMETERS & SCHEMATIC */}
+          <button
+            onClick={() => setActiveTab('parameters')}
+            className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none whitespace-nowrap ${
+              activeTab === 'parameters'
+                ? 'bg-[#1a73e8] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <ListFilter className="w-4 h-4" />
+            <span>Road Parameters</span>
             <span
-              className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-medium ${
-                activeTab === 'equipment' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+              className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
+                activeTab === 'parameters'
+                  ? 'bg-white/20 text-white'
+                  : isNsvUploaded
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-amber-100 text-amber-800'
               }`}
             >
-              Locked
+              {isNsvUploaded ? '₹28.20L' : 'Pending'}
             </span>
-          )}
-        </button>
+          </button>
 
-        {/* TAB 4: PAVEMENT DISTRESS & POTHOLES */}
-        <button
-          onClick={() => setActiveTab('condition')}
-          className={`flex-1 min-w-fit px-3 h-7.5 text-xs rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
-            activeTab === 'condition'
-              ? 'bg-[#1a73e8] text-white font-bold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
-          }`}
-        >
-          <AlertTriangle className={`w-3.5 h-3.5 ${activeTab === 'condition' ? 'text-white' : 'text-red-600'}`} />
-          <span>Distress &amp; Potholes</span>
-          <span
-            className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-              activeTab === 'condition' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700'
+          {/* TAB 3: NSV EQUIPMENT & SENSORS */}
+          <button
+            onClick={() => setActiveTab('equipment')}
+            className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none whitespace-nowrap ${
+              activeTab === 'equipment'
+                ? 'bg-[#1a73e8] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            4 Nos.
-          </span>
-        </button>
+            <Cpu className={`w-4 h-4 ${activeTab === 'equipment' ? 'text-white' : 'text-blue-600'}`} />
+            <span>NSV Sensors</span>
+            {!isNsvUploaded && (
+              <span
+                className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
+                  activeTab === 'equipment' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                Locked
+              </span>
+            )}
+          </button>
 
-        {/* TAB 5: ROUGHNESS & IRI ANALYTICS */}
-        <button
-          onClick={() => setActiveTab('roughness')}
-          className={`flex-1 min-w-fit px-3 h-7.5 text-xs rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
-            activeTab === 'roughness'
-              ? 'bg-[#1a73e8] text-white font-bold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
-          }`}
-        >
-          <Activity className={`w-3.5 h-3.5 ${activeTab === 'roughness' ? 'text-white' : 'text-[#ea4335]'}`} />
-          <span>Roughness (IRI)</span>
-          <span
-            className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold font-mono ${
+          {/* TAB 4: PAVEMENT DISTRESS & POTHOLES */}
+          <button
+            onClick={() => setActiveTab('condition')}
+            className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none whitespace-nowrap ${
+              activeTab === 'condition'
+                ? 'bg-[#1a73e8] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <AlertTriangle className={`w-4 h-4 ${activeTab === 'condition' ? 'text-white' : 'text-red-600'}`} />
+            <span>Distress &amp; Potholes</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
+                activeTab === 'condition' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700'
+              }`}
+            >
+              4 Nos.
+            </span>
+          </button>
+
+          {/* TAB 5: ROUGHNESS & IRI ANALYTICS */}
+          <button
+            onClick={() => setActiveTab('roughness')}
+            className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none whitespace-nowrap ${
               activeTab === 'roughness'
-                ? 'bg-white/20 text-white'
-                : isNsvUploaded
-                ? 'bg-red-100 text-red-700'
-                : 'bg-amber-100 text-amber-800'
+                ? 'bg-[#1a73e8] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            {isNsvUploaded ? '5.20' : 'Pending'}
-          </span>
-        </button>
+            <Activity className={`w-4 h-4 ${activeTab === 'roughness' ? 'text-white' : 'text-[#ea4335]'}`} />
+            <span>Roughness (IRI)</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
+                activeTab === 'roughness'
+                  ? 'bg-white/20 text-white'
+                  : isNsvUploaded
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-amber-100 text-amber-800'
+              }`}
+            >
+              {isNsvUploaded ? '5.20' : 'Pending'}
+            </span>
+          </button>
 
-        {/* TAB 6: RUTTING DATA & FIELD SHEET */}
-        <button
-          onClick={() => setActiveTab('rutting')}
-          className={`flex-1 min-w-fit px-3 h-7.5 text-xs rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
-            activeTab === 'rutting'
-              ? 'bg-[#1a73e8] text-white font-bold shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-medium'
-          }`}
-        >
-          <TrendingDown className={`w-3.5 h-3.5 ${activeTab === 'rutting' ? 'text-white' : 'text-amber-600'}`} />
-          <span>Rutting Data</span>
-          <span
-            className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold font-mono ${
+          {/* TAB 6: RUTTING DATA & FIELD SHEET */}
+          <button
+            onClick={() => setActiveTab('rutting')}
+            className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 select-none whitespace-nowrap ${
               activeTab === 'rutting'
-                ? 'bg-white/20 text-white'
-                : isNsvUploaded
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-slate-100 text-slate-500'
+                ? 'bg-[#1a73e8] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            {isNsvUploaded ? '20mm' : 'Pending'}
-          </span>
-        </button>
+            <TrendingDown className={`w-4 h-4 ${activeTab === 'rutting' ? 'text-white' : 'text-amber-600'}`} />
+            <span>Rutting Data</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
+                activeTab === 'rutting'
+                  ? 'bg-white/20 text-white'
+                  : isNsvUploaded
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-slate-100 text-slate-500'
+              }`}
+            >
+              {isNsvUploaded ? '20mm' : 'Pending'}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* LOCKED STATE GATE FOR NSV-DEPENDENT TABS WHEN NSV IS PENDING */}
       {activeTab !== 'visuals' && !isNsvUploaded ? (
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xs p-8 text-center space-y-4 max-w-lg mx-auto my-8 font-sans animate-in fade-in">
-          <div className="w-14 h-14 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600 shadow-2xs">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-xs p-8 text-center space-y-4 max-w-lg mx-auto my-8 font-sans transition-all duration-200">
+          <div className="w-14 h-14 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-600 shadow-sm">
             <AlertTriangle className="w-7 h-7" />
           </div>
           <div>
@@ -591,14 +593,14 @@ export const NSVDetailsPage: React.FC = () => {
           <div className="flex items-center justify-center gap-2 pt-2">
             <button
               onClick={() => setShowUploadModal(true)}
-              className="px-4 py-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5 cursor-pointer active:scale-98"
+              className="px-4 py-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5 cursor-pointer active:scale-95"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Upload Certified NSV Report</span>
             </button>
             <button
               onClick={() => setActiveTab('visuals')}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer active:scale-98"
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer active:scale-95"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>View Drone Aerial Survey</span>
@@ -609,46 +611,46 @@ export const NSVDetailsPage: React.FC = () => {
         <>
           {/* TAB 1 CONTENT: DRONE SNAP MAP TOPMOST & LANE NUMBERED POTHOLES */}
           {activeTab === 'visuals' && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Executive At-a-Glance Telemetry Strip (Kept inside Drone Snap Map & Gallery when NSV is uploaded) */}
               {isNsvUploaded ? (
-                <div className="p-3.5 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-xl shadow-md border border-slate-700/60 font-sans space-y-3 animate-in fade-in">
+                <div className="p-4 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-xl shadow-sm border border-slate-700/60 font-sans space-y-4 transition-all duration-200">
                   {/* Metric Strip: 6 Primary Telemetry KPIs */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                    <div className="p-2.5 bg-white/10 rounded-lg border border-white/10">
-                      <span className="text-[9px] text-blue-200 block uppercase font-mono">Condition / Score</span>
-                      <div className="text-xs font-bold text-red-400 font-mono flex items-center gap-1.5 mt-0.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                      <span className="text-[10px] text-blue-200 block uppercase font-medium">Condition / Score</span>
+                      <div className="text-xs font-bold text-red-400 tabular-nums flex items-center gap-1.5 mt-0.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                         <span>24 / 100</span>
                       </div>
                       <span className="text-[10px] text-slate-300">Critical Priority</span>
                     </div>
 
-                    <div className="p-2.5 bg-white/10 rounded-lg border border-white/10">
-                      <span className="text-[9px] text-blue-200 block uppercase font-mono">Roughness (IRI)</span>
+                    <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                      <span className="text-[10px] text-blue-200 block uppercase font-medium">Roughness (IRI)</span>
                       <div className="text-xs font-bold text-red-400 font-mono mt-0.5">5.20 m/km</div>
                       <span className="text-[10px] text-slate-300">IRC:SP:16 Limit: 4.0</span>
                     </div>
 
-                    <div className="p-2.5 bg-white/10 rounded-lg border border-white/10">
+                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
                       <span className="text-[9px] text-blue-200 block uppercase font-mono">Laser Rut Depth</span>
                       <div className="text-xs font-bold text-amber-300 font-mono mt-0.5">20 mm</div>
                       <span className="text-[10px] text-slate-300">Lane 1 Wheelpath</span>
                     </div>
 
-                    <div className="p-2.5 bg-white/10 rounded-lg border border-white/10">
+                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
                       <span className="text-[9px] text-blue-200 block uppercase font-mono">Verified Potholes</span>
                       <div className="text-xs font-bold text-red-400 font-mono mt-0.5">4 Nos.</div>
                       <span className="text-[10px] text-slate-300">1.86 m² • 0.037 m³</span>
                     </div>
 
-                    <div className="p-2.5 bg-white/10 rounded-lg border border-white/10">
+                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
                       <span className="text-[9px] text-blue-200 block uppercase font-mono">Resurfacing Scope</span>
                       <div className="text-xs font-bold text-cyan-300 font-mono mt-0.5">120 Meters</div>
                       <span className="text-[10px] text-slate-300">Ch: 0+000 to 0+120</span>
                     </div>
 
-                    <div className="p-2.5 bg-white/10 rounded-lg border border-white/10">
+                    <div className="p-3 bg-white/10 rounded-lg border border-white/10">
                       <span className="text-[9px] text-blue-200 block uppercase font-mono">Estimated Repair Cost</span>
                       <div className="text-xs font-bold text-emerald-400 font-mono mt-0.5">₹28.20 Lakh</div>
                       <span className="text-[10px] text-slate-300">MoRTH Schedule of Rates</span>
@@ -656,7 +658,7 @@ export const NSVDetailsPage: React.FC = () => {
                   </div>
 
                   {/* Sub-Strip: Corridor Coordinates & Authority Meta */}
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between flex-wrap gap-2 text-[10px] text-blue-200">
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between flex-wrap gap-2 text-[10px] text-blue-200">
                     <div className="flex items-center gap-2.5 flex-wrap">
                       <span className="flex items-center gap-1">
                         <Building2 className="w-3 h-3 text-blue-400" />
@@ -665,7 +667,7 @@ export const NSVDetailsPage: React.FC = () => {
                       <span className="text-white/20">•</span>
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-red-400" />
-                        <strong className="text-white">GPS:</strong> {(isMar1111 ? 22.5821 : details.gpsStart.lat).toFixed(4)}°N, {(isMar1111 ? 88.4731 : details.gpsStart.lng).toFixed(4)}°E
+                        <strong className="text-white">GPS:</strong> {(isMar1111 ? 22.5821 : details.gpsStart.lat).toFixed(4)}°N, {(isMar1111 ? 88.4730 : details.gpsStart.lng).toFixed(4)}°E
                       </span>
                       <span className="text-white/20">•</span>
                       <span>
@@ -690,7 +692,7 @@ export const NSVDetailsPage: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="w-full bg-amber-50 border border-amber-200 rounded-xl p-3.5 shadow-2xs text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-900">
+                <div className="w-full max-w-full min-w-0 bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-amber-900">
                   <div className="flex items-center gap-2 overflow-hidden min-w-0">
                     <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
                     <span className="font-semibold whitespace-nowrap">Drone Photogrammetry Active</span>
@@ -701,7 +703,7 @@ export const NSVDetailsPage: React.FC = () => {
                   </div>
                   <button
                     onClick={() => setShowUploadModal(true)}
-                    className="h-7 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold rounded-lg transition text-xs flex items-center gap-1.5 cursor-pointer flex-shrink-0 shadow-xs active:scale-98"
+                    className="h-8 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-semibold rounded-lg transition text-xs inline-flex items-center gap-1.5 cursor-pointer flex-shrink-0 shadow-sm active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
                   >
                     <Upload className="w-3.5 h-3.5" />
                     <span>Upload NSV</span>
@@ -713,7 +715,7 @@ export const NSVDetailsPage: React.FC = () => {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
                   <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                    1. Drone Snap-Taking Flight Map &amp; Waypoints
+                    1. Drone Flight Corridor Inspection Runway &amp; Waypoints (120m)
                   </h3>
                   <span className="text-[11px] text-slate-500 font-mono">
                     Corridor: {details.roadCode} ({details.section})
@@ -824,10 +826,10 @@ export const NSVDetailsPage: React.FC = () => {
         />
       )}
 
-      {/* 14-PAGE OFFICIAL NSV PDF REPORT MODAL */}
+      {/* 15-PAGE OFFICIAL NSV PDF REPORT MODAL */}
       {showPdfModal &&
         createPortal(
-          <div className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in" style={{ isolation: 'isolate' }}>
+          <div className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto transition-all duration-200" style={{ isolation: 'isolate' }}>
             <div className="relative max-w-5xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-slate-300 my-8 flex flex-col max-h-[90vh]">
               <div className="p-4 bg-slate-900 text-white flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2">
@@ -837,7 +839,7 @@ export const NSVDetailsPage: React.FC = () => {
                       Certified Network Survey Vehicle (NSV) Report • {details.roadName} ({details.roadCode})
                     </span>
                     <span className="text-[11px] text-slate-400">
-                      Official 14-Page Statutory Document • West Bengal PWD &amp; NKDA Format
+                      Official 15-Page Statutory Document • West Bengal PWD &amp; NKDA Format
                     </span>
                   </div>
                 </div>
@@ -868,7 +870,7 @@ export const NSVDetailsPage: React.FC = () => {
       {/* FLEXIBLE PAVEMENT MATERIALS MODAL */}
       {showPavementModal &&
         createPortal(
-          <div className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 transition-all duration-200">
             <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-300 shadow-2xl overflow-hidden font-sans">
               <div className="p-4 bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -975,11 +977,11 @@ export const NSVDetailsPage: React.FC = () => {
       {/* Dynamic DPR Generation 3-Step Animated Modal (Light Theme) */}
       {isGeneratingDpr &&
         createPortal(
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 font-sans animate-in fade-in duration-150">
-            <div className="bg-white text-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in zoom-in-95">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 font-sans transition-all duration-150">
+            <div className="bg-white text-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shadow-2xs">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shadow-sm">
                     <FileText className="w-5 h-5 animate-pulse" />
                   </div>
                   <div>
@@ -991,7 +993,7 @@ export const NSVDetailsPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
+                <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
                   Step {dprGenStep} of 3
                 </span>
               </div>
@@ -1026,7 +1028,7 @@ export const NSVDetailsPage: React.FC = () => {
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
                   <div
-                    className="bg-[#1a73e8] h-full transition-all duration-500 rounded-full shadow-2xs"
+                    className="bg-[#1a73e8] h-full transition-all duration-500 rounded-full shadow-sm"
                     style={{ width: `${(dprGenStep / 3) * 100}%` }}
                   />
                 </div>

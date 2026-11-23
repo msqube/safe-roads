@@ -127,10 +127,10 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
     if (!transitioningStep) return null;
     return createPortal(
       <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 font-sans animate-in fade-in duration-150">
-        <div className="bg-white text-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in zoom-in-95">
+        <div className="bg-white text-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shadow-sm">
                 <Sparkles className="w-5 h-5 animate-pulse" />
               </div>
               <div>
@@ -142,7 +142,7 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
                 </p>
               </div>
             </div>
-            <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
+            <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
               Phase {transitionStage} of 3
             </span>
           </div>
@@ -189,7 +189,7 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
             </div>
             <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
               <div
-                className="bg-[#1a73e8] h-full transition-all duration-300 rounded-full shadow-2xs"
+                className="bg-[#1a73e8] h-full transition-all duration-300 rounded-full shadow-sm"
                 style={{ width: `${(transitionStage / 3) * 100}%` }}
               />
             </div>
@@ -203,23 +203,23 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
   if (compact) {
     return (
       <div
-        className={`w-full bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs font-sans flex items-center justify-between gap-3 text-xs no-scrollbar ${className}`}
+        className={`w-full max-w-full min-w-0 bg-white border border-slate-200 rounded-xl p-4 shadow-sm font-sans flex items-center justify-between gap-3 text-xs no-scrollbar ${className}`}
       >
         {/* Left Side: Step Badge & Title */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#1a73e8] text-[10px] font-bold">
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#1a73e8] text-[11px] font-bold tabular-nums">
             <span className="w-1.5 h-1.5 rounded-full bg-[#1a73e8] animate-pulse" />
             <span>STEP {currentStep}/4</span>
           </div>
           <span className="text-slate-300">•</span>
-          <span className="font-bold text-slate-800 text-[11px] hidden sm:inline">
+          <span className="font-bold text-slate-800 text-xs hidden sm:inline">
             {currentStepObj.title}
           </span>
         </div>
 
         {/* Right Side: 4 Compact Stepper Pills + Corridor Info pushed towards the right */}
-        <div className="flex items-center gap-2.5 ml-auto">
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2.5 ml-auto min-w-0">
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar min-w-0">
             {steps.map((s, idx) => {
               const Icon = s.icon;
               const canClick = !s.isLocked && !s.isActive;
@@ -231,8 +231,8 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
                     type="button"
                     onClick={() => handleStepClick(s)}
                     disabled={s.isLocked || s.isActive}
-                    className={`h-7 px-2.5 rounded-md transition flex items-center gap-1.5 text-[11px] whitespace-nowrap ${s.isActive
-                      ? 'bg-[#1a73e8] text-white font-bold shadow-xs'
+                    className={`h-8 px-3 rounded-lg transition inline-flex items-center gap-1.5 text-xs whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 ${s.isActive
+                      ? 'bg-[#1a73e8] text-white font-bold shadow-sm'
                       : s.isCompleted
                         ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 cursor-pointer font-medium'
                         : s.isLocked
@@ -242,23 +242,23 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
                     title={s.isLocked ? s.statusLabel : `Jump to ${s.title}`}
                   >
                     {s.isCompleted ? (
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                     ) : s.isLocked ? (
-                      <Lock className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                      <Lock className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                     ) : (
-                      <Icon className="w-3 h-3 flex-shrink-0" />
+                      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
                     )}
                     <span>
                       {s.stepNumber}. {s.shortTitle}
                     </span>
                   </button>
-                  {!isLast && <ChevronRight className="w-3 h-3 text-slate-300 flex-shrink-0" />}
+                  {!isLast && <ChevronRight className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />}
                 </React.Fragment>
               );
             })}
           </div>
 
-          <span className="text-[10px] font-mono text-slate-500 hidden md:inline border-l border-slate-200 pl-2.5">
+          <span className="text-xs font-mono text-slate-500 hidden md:inline border-l border-slate-200 pl-2.5">
             Corridor: <strong className="text-slate-800">{roadCode}</strong>
           </span>
         </div>
@@ -269,12 +269,12 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
 
   return (
     <div
-      className={`w-full bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-2xs font-sans ${className}`}
+      className={`w-full max-w-full min-w-0 bg-white border border-slate-200 rounded-xl p-4 shadow-sm font-sans space-y-4 ${className}`}
     >
       {/* Header Info Row */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-slate-100">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#1a73e8] text-[11px] font-bold">
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-[#1a73e8] text-[11px] font-bold tabular-nums">
             <span className="w-2 h-2 rounded-full bg-[#1a73e8] animate-pulse" />
             <span>WORKFLOW PIPELINE TRAIL</span>
           </div>
@@ -288,7 +288,7 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
         </div>
 
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-[11px] text-slate-500">Asset Corridor:</span>
+          <span className="text-slate-500 text-xs">Asset Corridor:</span>
           <span className="px-2 py-0.5 rounded font-mono font-bold text-xs bg-slate-100 text-slate-800 border border-slate-200">
             {roadCode}
           </span>
@@ -297,7 +297,7 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
       </div>
 
       {/* 4-Step Interactive Breadcrumb Stepper */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 relative">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 relative">
         {steps.map((s, idx) => {
           const Icon = s.icon;
           const isLast = idx === steps.length - 1;
@@ -307,13 +307,13 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
             <div
               key={s.stepNumber}
               onClick={() => canClick && handleStepClick(s)}
-              className={`p-3 rounded-xl border transition relative flex items-start gap-3 ${s.isActive
-                ? 'bg-blue-50/80 border-blue-400 ring-2 ring-blue-100 shadow-xs'
+              className={`p-4 rounded-xl border transition relative flex items-start gap-3 ${s.isActive
+                ? 'bg-blue-50/80 border-blue-400 ring-2 ring-blue-100 shadow-sm'
                 : s.isCompleted
-                  ? 'bg-emerald-50/40 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer shadow-2xs'
+                  ? 'bg-emerald-50/40 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 cursor-pointer shadow-sm'
                   : s.isLocked
                     ? 'bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed'
-                    : 'bg-white border-slate-200 hover:border-slate-300 cursor-pointer hover:shadow-2xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 cursor-pointer hover:shadow-sm'
                 }`}
             >
               {/* Step Icon Badge */}
@@ -321,7 +321,7 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
                 className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition ${s.isActive
                   ? 'bg-[#1a73e8] text-white shadow-xs'
                   : s.isCompleted
-                    ? 'bg-emerald-600 text-white shadow-2xs'
+                    ? 'bg-emerald-600 text-white shadow-sm'
                     : s.isLocked
                       ? 'bg-slate-200 text-slate-400'
                       : 'bg-slate-100 text-slate-600'
@@ -350,7 +350,7 @@ export const WorkflowPipelineTrail: React.FC<WorkflowPipelineTrailProps> = ({
                     Step {s.stepNumber}
                   </span>
                   {s.isActive && (
-                    <span className="px-1.5 py-0.2 bg-blue-600 text-white rounded text-[9px] font-bold uppercase tracking-tight animate-pulse">
+                    <span className="px-1.5 py-0.5 bg-blue-600 text-white rounded text-[9px] font-bold uppercase tracking-tight animate-pulse">
                       Active
                     </span>
                   )}

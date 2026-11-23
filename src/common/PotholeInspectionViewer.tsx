@@ -66,32 +66,39 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
         </div>
       )}
 
-      {/* Top Header - Equal Padding p-3.5 */}
-      <div className="p-3.5 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <span>Verified Defect Telemetry</span>
-            <span className="text-xs px-2 py-0.5 rounded font-mono bg-red-100 text-red-800 border border-red-300 font-bold">
-              {activeDefect.potholeId}
-            </span>
-          </h4>
-          <p className="text-[11px] text-slate-500">
-            Chainage {activeDefect.chainage} • 20mm Depth • 120m Resurfacing Segment
-          </p>
+      {/* Top Header - Harmonized Clean Straight Row & Standard Padding px-4 py-3 */}
+      <div className="px-4 py-3 border-b border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-sans min-h-[52px]">
+        <div className="flex items-center gap-2.5 min-w-0 flex-shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center text-red-600 flex-shrink-0">
+            <AlertTriangle className="w-4 h-4" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h4 className="text-xs font-bold text-slate-900 tracking-tight whitespace-nowrap">
+                Verified Defect Telemetry
+              </h4>
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-300 font-semibold tabular-nums whitespace-nowrap">
+                {activeDefect.potholeId}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 truncate">
+              Chainage {activeDefect.chainage} • 20mm Depth • 120m Resurfacing Segment
+            </p>
+          </div>
         </div>
 
         {/* Defect Switcher & Box toggle */}
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-shrink-0">
           {defects.length > 1 && (
-            <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-0.5 shadow-2xs">
+            <div className="h-8 flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-1">
               {defects.map((d, idx) => (
                 <button
                   key={d.id}
                   onClick={() => handleSelectDefect(d.id)}
-                  className={`px-2 py-1 text-xs rounded font-bold cursor-pointer transition ${
+                  className={`h-6 px-3 text-xs rounded-md font-semibold cursor-pointer transition flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 ${
                     activeDefect.id === d.id
-                      ? 'bg-red-600 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      ? 'bg-red-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white'
                   }`}
                   title={`Inspect Pothole #${idx + 1} (${d.potholeId})`}
                 >
@@ -103,9 +110,9 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
 
           <button
             onClick={() => setShowBoundingBox(!showBoundingBox)}
-            className={`px-2.5 py-1 text-xs rounded-lg border cursor-pointer font-medium transition ${
+            className={`h-8 px-3 text-xs rounded-lg border cursor-pointer font-semibold transition whitespace-nowrap shadow-sm inline-flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 ${
               showBoundingBox
-                ? 'bg-blue-50 text-blue-700 border-blue-200 font-semibold'
+                ? 'bg-blue-50 text-blue-700 border-blue-200'
                 : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
             }`}
           >
@@ -118,7 +125,7 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
       <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
         {/* Left Image View */}
         <div className="md:col-span-7 bg-slate-950 min-h-[340px] flex items-center justify-center p-4 relative border-b md:border-b-0 md:border-r border-slate-200">
-          <div className="relative w-full max-w-lg aspect-[4/3] rounded-lg overflow-hidden shadow-lg border border-slate-800">
+          <div className="relative w-full max-w-lg aspect-[4/3] rounded-xl overflow-hidden shadow-lg border border-slate-800">
             <img
               src={activeDefect.photoUrl}
               alt={activeDefect.name}
@@ -148,8 +155,8 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
         </div>
 
         {/* Right Details Card */}
-        <div className="md:col-span-5 p-5 bg-white flex flex-col justify-between space-y-4">
-          <div className="space-y-3">
+        <div className="md:col-span-5 p-4 bg-white flex flex-col justify-between space-y-4">
+          <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-500 font-medium">Defect Classification</span>
@@ -169,30 +176,30 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
 
             {/* Metrics */}
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
                 <span className="text-slate-500 text-[11px]">Measured Depth</span>
-                <div className="text-base font-black text-red-600">
+                <div className="text-base font-bold tabular-nums text-red-600">
                   {activeDefect.dimensions.depthMm} mm
                 </div>
               </div>
 
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
                 <span className="text-slate-500 text-[11px]">Distress Area</span>
-                <div className="text-sm font-bold text-slate-800">
+                <div className="text-sm font-bold tabular-nums text-slate-800">
                   {activeDefect.dimensions.lengthCm} × {activeDefect.dimensions.widthCm} cm
                 </div>
-                <div className="text-[10px] text-slate-500">0.465 m² (20 sq ft / 4)</div>
+                <div className="text-[10px] text-slate-500 tabular-nums">0.465 m² (20 sq ft / 4)</div>
               </div>
 
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
                 <span className="text-slate-500 text-[11px]">Calculated Void Volume</span>
-                <div className="text-base font-bold text-slate-800">
-                  0.0093 m³
+                <div className="text-base font-bold tabular-nums text-slate-800">
+                  0.0372 m³
                 </div>
                 <div className="text-[10px] text-slate-500">MoRTH Standard Spec (m³)</div>
               </div>
 
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
                 <span className="text-slate-500 text-[11px]">Geotag GPS</span>
                 <div className="text-xs font-mono font-bold text-slate-800 pt-0.5">
                   {activeDefect.gpsCoordinates.lat.toFixed(5)}°N
@@ -204,7 +211,7 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
             </div>
 
             {/* Engineering Failure & Treatment Analysis */}
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1 text-xs">
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5 text-xs">
               <div className="text-slate-500 font-semibold text-[11px]">MoRTH Failure Diagnosis:</div>
               <div className="text-slate-700 font-medium">
                 Wearing course fatigue fracture &amp; aggregate binder loss under heavy axle loading.
@@ -219,7 +226,7 @@ export const PotholeInspectionViewer: React.FC<PotholeInspectionViewerProps> = (
           {onAssignRepair && (
             <button
               onClick={() => onAssignRepair(activeDefect)}
-              className="w-full py-2.5 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-bold rounded-lg text-xs transition cursor-pointer shadow-sm flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-3 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-semibold rounded-lg text-xs transition cursor-pointer shadow-sm flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
             >
               <Wrench className="w-4 h-4" />
               <span>Assign Whole Road Corridor Resurfacing Package (120m)</span>

@@ -20,32 +20,32 @@ export const InventoryList: React.FC<InventoryListProps> = ({ items = [] }) => {
   };
 
   return (
-        <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-            <h4 className="font-semibold text-slate-900 text-sm">Road Inventory</h4>
-            <span className="text-xs text-slate-500 font-medium">{items.length} Items</span>
+    <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between gap-3 flex-wrap">
+        <h4 className="font-bold text-slate-900 text-sm">Road Inventory</h4>
+        <span className="text-xs text-slate-500 font-medium tabular-nums">{items.length} Items</span>
+      </div>
+
+      <div className="divide-y divide-slate-100 text-xs">
+        {items.map((item) => (
+          <div key={item.id} className="px-4 py-3 hover:bg-slate-50 flex items-center justify-between gap-4 transition-colors">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-slate-900">{item.name}</span>
+                <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                  {item.category}
+                </span>
+              </div>
+              <p className="text-slate-500">{item.details}</p>
+              <span className="text-[11px] text-slate-400 block tabular-nums">Location: {item.chainageLocation}</span>
+            </div>
+
+            <div className="flex-shrink-0">
+              {getConditionBadge(item.condition)}
+            </div>
           </div>
-
-            <div className="divide-y divide-slate-100 text-xs">
-              {items.map((item) => (
-                        <div key={item.id} className="p-3.5 hover:bg-slate-50 flex items-center justify-between gap-4">
-                          <div className="space-y-0.5">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-slate-900">{item.name}</span>
-                              <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
-                                {item.category}
-                              </span>
-                            </div>
-                            <p className="text-slate-500">{item.details}</p>
-                            <span className="text-[11px] text-slate-400 block">Location: {item.chainageLocation}</span>
-                          </div>
-
-                            <div className="flex-shrink-0">
-                              {getConditionBadge(item.condition)}
-                            </div>
-                          </div>
         ))}
-                        </div>
-                    </div>
-                    );
+      </div>
+    </div>
+  );
 };

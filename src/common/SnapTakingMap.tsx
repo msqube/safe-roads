@@ -1,26 +1,19 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import L from 'leaflet';
 import { RoadSnapPoint } from '../models/nsvModels';
 import {
-  Layers,
   MapPin,
   Camera,
   ExternalLink,
   Eye,
-  Crosshair,
-  Maximize2,
   Navigation,
   X,
   ZoomIn,
   ZoomOut,
-  RotateCw,
-  Sparkles,
-  ShieldAlert,
   FileText,
-  CheckCircle,
   Download,
   ArrowDown,
+  Compass,
 } from 'lucide-react';
 
 interface SnapTakingMapProps {
@@ -44,39 +37,32 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
   onTakeSnapshot,
   onNavigateToSection2,
 }) => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const layerGroupRef = useRef<L.LayerGroup | null>(null);
-  const tileLayerRef = useRef<L.TileLayer | null>(null);
-
-  const [mapType, setMapType] = useState<'streets' | 'satellite'>('streets');
-
   const isMar1111 = roadCode === 'MAR-1111' || roadCode.includes('1111');
 
-  // Certified Highway Snap Points for MAR-1111 on Biswa Bangla Sarani (Lane 1)
+  // Certified Highway Snap Points for MAR-1111 (100% Horizontally Straight Alignment)
   const verifiedSnapPoints: RoadSnapPoint[] = useMemo(() => {
     if (!isMar1111) return snapPoints;
     const realSpecs = [
       {
-        lat: 22.58168,
-        lng: 88.47288,
+        lat: 22.58210,
+        lng: 88.47220,
         ch: 'Km 0+018',
         thumb: '/images/pothole_1.jpg',
       },
       {
-        lat: 22.58195,
-        lng: 88.47298,
+        lat: 22.58210,
+        lng: 88.47250,
         ch: 'Km 0+045',
         thumb: '/images/pothole_2.jpg',
       },
       {
-        lat: 22.58232,
-        lng: 88.47312,
+        lat: 22.58210,
+        lng: 88.47290,
         ch: 'Km 0+082',
         thumb: '/images/pothole_3.jpg',
       },
       {
-        lat: 22.58255,
+        lat: 22.58210,
         lng: 88.47320,
         ch: 'Km 0+105',
         thumb: '/images/pothole_4.jpg',
@@ -111,268 +97,13 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
     verifiedSnapPoints.find((s) => s.id === selectedSnapId) || verifiedSnapPoints[0] || null
   );
 
-  // Update active snap when verifiedSnapPoints change
-  useEffect(() => {
-    setActiveSnap(verifiedSnapPoints.find((s) => s.id === selectedSnapId) || verifiedSnapPoints[0] || null);
-  }, [verifiedSnapPoints, selectedSnapId]);
-
   // Real Structure Detailed Modal State
   const [inspectModalSnap, setInspectModalSnap] = useState<RoadSnapPoint | null>(null);
   const [modalZoom, setModalZoom] = useState<number>(1.0);
   const [showAiBox, setShowAiBox] = useState<boolean>(true);
 
-  // Default coordinate: Biswa Bangla Sarani Lane 1
   const initialLat = isMar1111 ? 22.58210 : centerGps?.lat || (verifiedSnapPoints[0]?.gps.lat) || 22.58210;
-  const initialLng = isMar1111 ? 88.47305 : centerGps?.lng || (verifiedSnapPoints[0]?.gps.lng) || 88.47305;
-
-  // Initialize Leaflet Map
-  useEffect(() => {
-    if (!mapContainerRef.current) return;
-
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-      mapInstanceRef.current = null;
-    }
-
-    const map = L.map(mapContainerRef.current, {
-      center: [initialLat, initialLng],
-      zoom: 17,
-      zoomControl: true,
-      scrollWheelZoom: true,
-    });
-
-    mapInstanceRef.current = map;
-
-    // Real High-Resolution Satellite with Street Reference Labels Layer (Hybrid)
-    const satelliteTiles = L.layerGroup([
-      L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        {
-          maxZoom: 19,
-          attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics',
-        }
-      ),
-      L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
-        {
-          maxZoom: 19,
-        }
-      ),
-      L.tileLayer(
-        'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-        {
-          maxZoom: 19,
-        }
-      ),
-    ]);
-
-    const streetTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap contributors | SafeRoads NKDA',
-    });
-
-    const activeTileLayer = mapType === 'satellite' ? satelliteTiles : streetTiles;
-    activeTileLayer.addTo(map);
-    tileLayerRef.current = activeTileLayer as any;
-
-    // Layer group for markers and route lines
-    const layerGroup = L.layerGroup().addTo(map);
-    layerGroupRef.current = layerGroup;
-
-    // Force map size recalculation
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 200);
-
-    return () => {
-      map.remove();
-      mapInstanceRef.current = null;
-    };
-  }, []);
-
-  // Handle Map Type Switching (Streets vs Satellite)
-  useEffect(() => {
-    if (!mapInstanceRef.current) return;
-    const map = mapInstanceRef.current;
-
-    if (tileLayerRef.current) {
-      map.removeLayer(tileLayerRef.current);
-    }
-
-    const newLayer =
-      mapType === 'satellite'
-        ? L.layerGroup([
-            L.tileLayer(
-              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-              {
-                maxZoom: 19,
-                attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics',
-              }
-            ),
-            L.tileLayer(
-              'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
-              {
-                maxZoom: 19,
-              }
-            ),
-            L.tileLayer(
-              'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-              {
-                maxZoom: 19,
-              }
-            ),
-          ])
-        : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors | SafeRoads NKDA',
-          });
-
-    newLayer.addTo(map);
-    tileLayerRef.current = newLayer as any;
-  }, [mapType]);
-
-  // Update Markers, Route Polyline, and Drone Flight Path
-  useEffect(() => {
-    if (!mapInstanceRef.current || !layerGroupRef.current) return;
-    const map = mapInstanceRef.current;
-    const layerGroup = layerGroupRef.current;
-    layerGroup.clearLayers();
-
-    if (verifiedSnapPoints.length === 0) return;
-
-    const latLngs: L.LatLngTuple[] = verifiedSnapPoints.map((s) => [s.gps.lat, s.gps.lng]);
-
-    // 1. Uniform Asphalt Carriageway Base (Constant width representation of 7.5m dual carriageway)
-    L.polyline(latLngs, {
-      color: '#1e293b',
-      weight: 18,
-      opacity: 0.9,
-      lineCap: 'round',
-      lineJoin: 'round',
-    }).addTo(layerGroup);
-
-    // 2. Uniform White Shoulder / Curb Borders
-    L.polyline(latLngs, {
-      color: '#ffffff',
-      weight: 16,
-      opacity: 0.4,
-      lineCap: 'round',
-    }).addTo(layerGroup);
-
-    // 3. Resurfacing Lane 1 Core Asphalt Surface (Uniform Breadth)
-    L.polyline(latLngs, {
-      color: '#0f172a',
-      weight: 14,
-      opacity: 0.95,
-      lineCap: 'round',
-    }).addTo(layerGroup);
-
-    // 4. Center Dashed Lane Divider (Uniform straight centerline)
-    L.polyline(latLngs, {
-      color: '#facc15',
-      weight: 2,
-      opacity: 0.9,
-      dashArray: '6, 6',
-    }).addTo(layerGroup);
-
-    // 5. Waypoint Flight Trajectory Vector (High-tech cyan/blue line)
-    const routeLine = L.polyline(latLngs, {
-      color: mapType === 'satellite' ? '#38bdf8' : '#1a73e8',
-      weight: 3,
-      opacity: 0.85,
-      dashArray: '4, 4',
-    }).addTo(layerGroup);
-
-    // Add Markers for each snap point
-    verifiedSnapPoints.forEach((snap, idx) => {
-      const isSelected = activeSnap?.id === snap.id;
-      const hasDefects = snap.defectsDetected > 0;
-
-      const markerColor = isSelected ? '#1a73e8' : hasDefects ? '#ea4335' : '#34a853';
-
-      const customIcon = L.divIcon({
-        className: 'custom-road-marker',
-        html: `
-          <div style="
-            background-color: ${markerColor};
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 2px solid #ffffff;
-            box-shadow: ${isSelected ? '0 0 0 4px rgba(26, 115, 232, 0.45), 0 3px 8px rgba(0,0,0,0.5)' : '0 2px 6px rgba(0,0,0,0.35)'};
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: bold;
-            font-family: monospace;
-            cursor: pointer;
-            transition: transform 0.15s ease;
-          ">
-            ${idx + 1}
-          </div>
-        `,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14],
-      });
-
-      const marker = L.marker([snap.gps.lat, snap.gps.lng], { icon: customIcon }).addTo(layerGroup);
-
-      // Popup with snap details & photo
-      const popupHtml = `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; min-width: 200px;">
-          <div style="font-weight: bold; font-size: 12px; color: #202124; margin-bottom: 4px;">
-            Snap #${snap.snapNumber} • ${snap.chainage}
-          </div>
-          <div style="color: #5f6368; font-size: 10px; margin-bottom: 6px;">
-            GPS: ${snap.gps.lat.toFixed(5)}°N, ${snap.gps.lng.toFixed(5)}°E
-          </div>
-          <div style="margin-bottom: 6px; border-radius: 4px; overflow: hidden; border: 1px solid #dadce0;">
-            <img src="${snap.thumbnailUrl}" style="width: 100%; height: 90px; object-fit: cover;" alt="Snap Preview" />
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <span style="font-weight: 600; color: ${hasDefects ? '#c5221f' : '#137333'};">
-              ${hasDefects ? `Pothole PH-0${snap.snapNumber} (20mm)` : 'Nominal Surface'}
-            </span>
-            <span style="font-size: 10px; color: #70757a;">Alt: ${snap.droneAltitudeMeters}m</span>
-          </div>
-          <button
-            id="snap-popup-nav-btn-${snap.snapNumber}"
-            style="width: 100%; padding: 5px 8px; background: #1a73e8; color: #ffffff; border: none; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;"
-          >
-            <span>View Full Details in Section 2 ↓</span>
-          </button>
-        </div>
-      `;
-
-      marker.bindPopup(popupHtml);
-
-      marker.on('popupopen', () => {
-        const btn = document.getElementById(`snap-popup-nav-btn-${snap.snapNumber}`);
-        if (btn) {
-          btn.onclick = () => {
-            if (onNavigateToSection2) onNavigateToSection2(snap);
-          };
-        }
-      });
-
-      marker.on('click', () => {
-        setActiveSnap(snap);
-        if (onSelectSnap) onSelectSnap(snap);
-      });
-    });
-
-    // Fit map bounds to road points
-    if (latLngs.length > 1) {
-      map.fitBounds(routeLine.getBounds(), { padding: [40, 40], maxZoom: 17 });
-    }
-  }, [verifiedSnapPoints, activeSnap, mapType]);
-
-  const handleCenterOnSelected = () => {
-    if (!mapInstanceRef.current || !activeSnap) return;
-    mapInstanceRef.current.setView([activeSnap.gps.lat, activeSnap.gps.lng], 18, { animate: true });
-  };
+  const initialLng = isMar1111 ? 88.47270 : centerGps?.lng || (verifiedSnapPoints[0]?.gps.lng) || 88.47270;
 
   const openInGoogleMaps = () => {
     const lat = activeSnap ? activeSnap.gps.lat : initialLat;
@@ -381,76 +112,46 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
   };
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex flex-col">
-      {/* Map Header Toolbar - Harmonized Height & Equal Padding p-3.5 */}
-      <div className="p-3.5 border-b border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 font-sans">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Navigation className="w-3.5 h-3.5 text-[#1a73e8] flex-shrink-0" />
-            <h4 className="text-xs font-bold text-slate-900 tracking-tight whitespace-nowrap">
-              Live Real-World Road Map (New Town Kolkata)
-            </h4>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded font-semibold bg-blue-50 text-[#1a73e8] border border-blue-200 whitespace-nowrap">
-              {verifiedSnapPoints.length} Geotagged Snaps
-            </span>
+    <div className="w-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm flex flex-col font-sans">
+      {/* 1. Header Toolbar - 100% Horizontal Straight Row & Standard Padding px-4 py-3 */}
+      <div className="px-4 py-3 border-b border-slate-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-h-[52px]">
+        {/* Left Side: Icon, Title & Pill Badge strictly inline */}
+        <div className="flex items-center gap-2.5 min-w-0 flex-shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1a73e8] flex-shrink-0">
+            <Compass className="w-4 h-4 text-[#1a73e8]" />
           </div>
-          <p className="text-[11px] text-slate-500 font-mono">
-            {roadCode} • {roadName}
-          </p>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h4 className="text-xs font-bold text-slate-900 tracking-tight whitespace-nowrap">
+                Live Flight Corridor Inspection
+              </h4>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-[#1a73e8] border border-blue-200 whitespace-nowrap tabular-nums">
+                {verifiedSnapPoints.length} Geotagged Snaps
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 truncate">
+              {roadCode} • {roadName} (Dual 7.5m Carriageway)
+            </p>
+          </div>
         </div>
 
-        {/* Map View & Layer Controls - Harmonized h-7 Buttons */}
-        <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+        {/* Right Side Actions - Horizontal Row */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar flex-shrink-0">
           {/* Inspect Structure Trigger */}
           <button
             onClick={() => setInspectModalSnap(activeSnap || verifiedSnapPoints[0] || null)}
-            className="h-7 px-2.5 bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition shadow-2xs whitespace-nowrap"
+            className="h-8 px-3 bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer transition shadow-sm whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
             title="Inspect real road structure & drone photogrammetry telemetry"
           >
             <Eye className="w-3.5 h-3.5 text-[#1a73e8]" />
             <span>Inspect Real Structure</span>
           </button>
 
-          {/* Map Layer Switcher: Streets vs Real Satellite */}
-          <div className="h-7 flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
-            <button
-              onClick={() => setMapType('streets')}
-              className={`h-6 px-2 rounded-md transition font-medium cursor-pointer flex items-center gap-1 text-[11px] ${
-                mapType === 'streets'
-                  ? 'bg-white text-[#1a73e8] font-bold shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <span>Street Map</span>
-            </button>
-            <button
-              onClick={() => setMapType('satellite')}
-              className={`h-6 px-2 rounded-md transition font-medium cursor-pointer flex items-center gap-1 text-[11px] ${
-                mapType === 'satellite'
-                  ? 'bg-white text-[#1a73e8] font-bold shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Layers className="w-3 h-3" />
-              <span>Real Satellite</span>
-            </button>
-          </div>
-
-          {/* Re-center Button */}
-          <button
-            onClick={handleCenterOnSelected}
-            title="Recenter on active GPS point"
-            className="h-7 px-2 bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1 text-xs shadow-2xs whitespace-nowrap"
-          >
-            <Crosshair className="w-3.5 h-3.5 text-blue-600" />
-            <span className="hidden sm:inline">Center</span>
-          </button>
-
           {/* Open Google Maps Live View */}
           <button
             onClick={openInGoogleMaps}
-            title="Open in Google Maps / Google Street View at exact location"
-            className="h-7 px-2.5 bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-300 transition cursor-pointer flex items-center gap-1 text-xs font-semibold shadow-2xs whitespace-nowrap"
+            title="Open exact GPS location in Google Maps"
+            className="h-8 px-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-300 transition cursor-pointer inline-flex items-center gap-1.5 text-xs font-semibold shadow-sm whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
           >
             <ExternalLink className="w-3.5 h-3.5 text-red-600" />
             <span>Google Maps</span>
@@ -458,44 +159,123 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
         </div>
       </div>
 
-      {/* Leaflet Map Canvas */}
-      <div className="relative w-full h-[360px] bg-slate-100">
-        <div ref={mapContainerRef} className="w-full h-full z-0" style={{ isolation: 'isolate' }} />
-
-        {/* Live GPS Coordinate Pill HUD */}
-        <div className="absolute bottom-3 left-3 z-[400] bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-slate-300 shadow-md text-xs font-mono flex items-center gap-2">
-          <MapPin className="w-3.5 h-3.5 text-[#ea4335]" />
-          <span className="text-slate-900 font-semibold">
-            {activeSnap
-              ? `${activeSnap.gps.lat.toFixed(5)}°N, ${activeSnap.gps.lng.toFixed(5)}°E`
-              : `${initialLat.toFixed(5)}°N, ${initialLng.toFixed(5)}°E`}
-          </span>
-          <span className="text-slate-300">•</span>
-          <span className="text-slate-600 font-sans font-medium">
-            {activeSnap ? activeSnap.chainage : 'Corridor Start'}
-          </span>
+      {/* 2. 100% Horizontally Straight Corridor Runway (Row-Wise Alignment, Zero Slant, Standard Padding p-4) */}
+      <div className="relative w-full h-[360px] bg-slate-950 flex flex-col justify-between p-4 select-none overflow-hidden border-b border-slate-200">
+        {/* Top Chainage Scale Row */}
+        <div className="flex items-center justify-between text-xs font-mono text-slate-300 pb-2 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-bold text-white">Km 0+000 (Start of 120m Resurfacing Segment)</span>
+          </div>
+          <div className="flex items-center gap-6 md:gap-14 text-[11px] text-slate-400 font-medium hidden sm:flex">
+            <span>Km 0+020</span>
+            <span>Km 0+040</span>
+            <span>Km 0+060</span>
+            <span>Km 0+080</span>
+            <span>Km 0+100</span>
+          </div>
+          <div className="flex items-center gap-2 font-bold text-white">
+            <span>Km 0+120 (End of Segment)</span>
+            <span className="w-2 h-2 rounded-full bg-red-400" />
+          </div>
         </div>
 
-        {/* Take Snapshot Trigger directly on Map */}
-        {onTakeSnapshot && activeSnap && (
-          <div className="absolute top-3 right-3 z-[400]">
-            <button
-              onClick={() => onTakeSnapshot(activeSnap.gps, activeSnap.chainage)}
-              className="px-3 py-1.5 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-semibold rounded-lg shadow-md transition cursor-pointer flex items-center gap-1.5"
-            >
-              <Camera className="w-3.5 h-3.5" />
-              <span>Capture Snap at Point #{activeSnap.snapNumber}</span>
-            </button>
+        {/* 100% Horizontally Straight Carriageway Runway */}
+        <div className="relative flex-1 my-3 bg-gradient-to-b from-slate-900 via-slate-900 to-black rounded-xl border border-slate-700/80 shadow-inner flex flex-col justify-between overflow-hidden">
+          {/* Lane 2: Fast Carriageway (Top Horizontal Lane) */}
+          <div className="h-1/2 border-b-2 border-dashed border-amber-400/80 relative flex items-center px-4 bg-slate-900/60">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                LANE 2
+              </span>
+              <span className="text-[11px] font-mono font-semibold text-slate-300">
+                Fast Carriageway • Median Divider Verge
+              </span>
+            </div>
+            <span className="absolute right-4 text-[10px] font-mono text-emerald-400 font-semibold">
+              IRI: 3.80 m/km • Sound Surface
+            </span>
           </div>
-        )}
+
+          {/* Lane 1: Slow / Heavy Wheelpath Resurfacing Zone (Bottom Horizontal Lane) */}
+          <div className="h-1/2 relative flex items-center px-4 bg-slate-950/90">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-red-950 text-red-300 border border-red-800">
+                LANE 1
+              </span>
+              <span className="text-[11px] font-mono font-bold text-red-400">
+                Slow / Heavy Wheelpath (Resurfacing Scope: 120m)
+              </span>
+            </div>
+            <span className="absolute right-4 text-[10px] font-mono text-red-400 font-bold hidden sm:inline">
+              IRI: 5.20 m/km • 20mm Rutting Depth
+            </span>
+
+            {/* Horizontal Waypoint Pins positioned precisely along chainage */}
+            {verifiedSnapPoints.map((snap, idx) => {
+              const isSelected = activeSnap?.id === snap.id;
+              const pct = idx === 0 ? 15 : idx === 1 ? 37.5 : idx === 2 ? 68.3 : 87.5;
+              return (
+                <button
+                  key={snap.id}
+                  onClick={() => {
+                    setActiveSnap(snap);
+                    if (onSelectSnap) onSelectSnap(snap);
+                  }}
+                  style={{ left: `${pct}%` }}
+                  className={`absolute -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer transition-all duration-150 z-20 ${
+                    isSelected ? 'scale-115' : 'hover:scale-105'
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-full flex flex-col items-center justify-center text-white font-mono shadow-xl border-2 transition ${
+                      isSelected
+                        ? 'bg-[#1a73e8] border-amber-300 ring-4 ring-blue-500/40'
+                        : snap.defectsDetected > 0
+                        ? 'bg-red-600 border-white hover:bg-red-500'
+                        : 'bg-emerald-600 border-white hover:bg-emerald-500'
+                    }`}
+                  >
+                    <span className="text-[11px] font-bold">#{snap.snapNumber}</span>
+                    <span className="text-[7px] font-semibold opacity-90">20mm</span>
+                  </div>
+                  <span
+                    className={`text-[9px] font-mono mt-1 px-1.5 py-0.5 rounded shadow whitespace-nowrap ${
+                      isSelected ? 'bg-blue-600 text-white font-bold' : 'bg-black/90 text-slate-300'
+                    }`}
+                  >
+                    {snap.chainage}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Bottom HUD Bar Row */}
+        <div className="flex items-center justify-between text-xs font-mono text-slate-400 pt-1">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-3.5 h-3.5 text-red-500" />
+            <span className="text-white font-semibold">
+              {activeSnap
+                ? `GPS: ${activeSnap.gps.lat.toFixed(5)}°N, ${activeSnap.gps.lng.toFixed(5)}°E • ${activeSnap.chainage}`
+                : 'Corridor Start'}
+            </span>
+          </div>
+          <span className="text-slate-400 text-[11px] hidden sm:inline">
+            MoRTH Dual 7.5m Carriageway • 100% Horizontal Straight Alignment
+          </span>
+        </div>
       </div>
 
-      {/* Snap Points Horizontal Rail */}
-      <div className="p-3 bg-slate-50 border-t border-slate-200">
+      {/* 3. Snap Points Horizontal Rail - Standard Padding p-4 Row-Wise */}
+      <div className="p-4 bg-slate-50">
         <div className="flex items-center justify-between text-xs mb-2">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-800">Flight Snaps Gallery along Corridor:</span>
-            <span className="text-slate-500 text-[11px] hidden sm:inline">Click any snap to inspect real road structure & telemetry</span>
+            <span className="text-slate-500 text-[11px] hidden sm:inline">
+              Click any snap to inspect real road structure &amp; telemetry
+            </span>
           </div>
           {activeSnap && (
             <button
@@ -519,9 +299,6 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                 onClick={() => {
                   setActiveSnap(snap);
                   if (onSelectSnap) onSelectSnap(snap);
-                  if (mapInstanceRef.current) {
-                    mapInstanceRef.current.setView([snap.gps.lat, snap.gps.lng], 18, { animate: true });
-                  }
                   if (onNavigateToSection2) {
                     onNavigateToSection2(snap);
                   }
@@ -596,7 +373,7 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                 </div>
 
                 <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
-                  GPS: {snap.gps.lat.toFixed(5)}°N
+                  GPS: {snap.gps.lat.toFixed(5)}°N, {snap.gps.lng.toFixed(5)}°E
                 </div>
 
                 {/* Explicit Button taking user to Section 2 */}
@@ -606,7 +383,7 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                     setActiveSnap(snap);
                     if (onNavigateToSection2) onNavigateToSection2(snap);
                   }}
-                  className="mt-2 w-full py-1.5 px-2 bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white rounded-md text-[11px] font-bold transition flex items-center justify-center gap-1 border border-blue-200 hover:border-blue-600 cursor-pointer shadow-2xs"
+                  className="mt-2 w-full py-1.5 px-2 bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white rounded-md text-[11px] font-bold transition flex items-center justify-center gap-1 border border-blue-200 hover:border-blue-600 cursor-pointer shadow-sm"
                 >
                   <span>View Details in Section 2</span>
                   <ArrowDown className="w-3 h-3" />
@@ -620,7 +397,7 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
       {/* REAL ROAD STRUCTURE & DRONE FLIGHT TELEMETRY MODAL */}
       {inspectModalSnap &&
         createPortal(
-          <div className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-200">
             <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-300">
               {/* Modal Header */}
               <div className="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between bg-white flex-shrink-0">
@@ -686,7 +463,8 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
 
                       {/* Sensor Watermark */}
                       <div className="absolute bottom-2 left-2 bg-black/80 text-white text-[10px] font-mono px-2 py-1 rounded backdrop-blur-xs border border-white/10 pointer-events-none">
-                        GPS: {inspectModalSnap.gps.lat.toFixed(5)}°N, {inspectModalSnap.gps.lng.toFixed(5)}°E • Alt: {inspectModalSnap.droneAltitudeMeters}m
+                        GPS: {inspectModalSnap.gps.lat.toFixed(5)}°N, {inspectModalSnap.gps.lng.toFixed(5)}°E • Alt:{' '}
+                        {inspectModalSnap.droneAltitudeMeters}m
                       </div>
                     </div>
 
@@ -747,16 +525,21 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                         </div>
                         <div>
                           <span className="text-slate-400 block text-[10px]">Flight Altitude</span>
-                          <span className="font-semibold text-slate-800 font-mono">{inspectModalSnap.droneAltitudeMeters} m AGL</span>
+                          <span className="font-semibold text-slate-800 font-mono">
+                            {inspectModalSnap.droneAltitudeMeters} m AGL
+                          </span>
                         </div>
                         <div>
                           <span className="text-slate-400 block text-[10px]">Flight Speed</span>
-                          <span className="font-semibold text-slate-800 font-mono">{inspectModalSnap.droneSpeedKmh} km/h</span>
+                          <span className="font-semibold text-slate-800 font-mono">
+                            {inspectModalSnap.droneSpeedKmh} km/h
+                          </span>
                         </div>
                         <div>
                           <span className="text-slate-400 block text-[10px]">Gimbal Pitch</span>
                           <span className="font-semibold text-slate-800 font-mono">
-                            {inspectModalSnap.cameraPitchDegrees}° ({inspectModalSnap.cameraPitchDegrees === -90 ? 'Nadir Orthophoto' : '45° Oblique'})
+                            {inspectModalSnap.cameraPitchDegrees}° (
+                            {inspectModalSnap.cameraPitchDegrees === -90 ? 'Nadir Orthophoto' : '45° Oblique'})
                           </span>
                         </div>
                         <div>
@@ -770,7 +553,7 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                     <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-2">
                       <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                         <FileText className="w-3.5 h-3.5 text-amber-600" />
-                        <span>Pavement Structure & Defect Diagnostics</span>
+                        <span>Pavement Structure &amp; Defect Diagnostics</span>
                       </h4>
                       <div className="space-y-1.5 text-[11px]">
                         <div className="flex justify-between border-b border-slate-100 pb-1">
@@ -781,8 +564,14 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                         </div>
                         <div className="flex justify-between border-b border-slate-100 pb-1">
                           <span className="text-slate-500">Distress Category:</span>
-                          <span className={`font-semibold ${inspectModalSnap.defectsDetected > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
-                            {inspectModalSnap.defectsDetected > 0 ? 'Wheelpath Pothole Defect' : 'Nominal Wearing Surface'}
+                          <span
+                            className={`font-semibold ${
+                              inspectModalSnap.defectsDetected > 0 ? 'text-red-600' : 'text-emerald-600'
+                            }`}
+                          >
+                            {inspectModalSnap.defectsDetected > 0
+                              ? 'Wheelpath Pothole Defect'
+                              : 'Nominal Wearing Surface'}
                           </span>
                         </div>
                         <div className="flex justify-between border-b border-slate-100 pb-1">
@@ -798,7 +587,7 @@ export const SnapTakingMap: React.FC<SnapTakingMapProps> = ({
                         <div className="pt-1">
                           <span className="text-slate-500 block text-[10px]">Recommended Remediation:</span>
                           <span className="font-semibold text-slate-800">
-                            Mechanized cold milling & localized patch with SS-1 tack coat
+                            Mechanized cold milling &amp; localized patch with SS-1 tack coat
                           </span>
                         </div>
                       </div>

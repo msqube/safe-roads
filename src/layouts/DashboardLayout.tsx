@@ -23,8 +23,8 @@ export const DashboardLayout: React.FC = () => {
           <span className="text-xs font-bold text-slate-800">SafeRoads NKDA</span>
         </div>
 
-        <main className="flex-1 overflow-y-auto p-3 sm:p-5 bg-slate-50">
-          <div className="max-w-7xl mx-auto space-y-4">
+        <main className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden px-4 lg:px-6 py-4 bg-slate-50">
+          <div className="w-full max-w-7xl mx-auto min-w-0 space-y-4">
             <Outlet />
           </div>
         </main>
