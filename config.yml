@@ -2,7 +2,7 @@ app_name: "safe-road-frontend"
 app_type: "frontend"
 framework: "vite"
 deployment_type: "process"
-port: 8350
+port: 8751
 node_version: "20"
 domain: "192.168.10.15"
 working_directory: "."
