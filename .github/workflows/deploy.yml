@@ -1,0 +1,15 @@
+name: safe_road_frontend
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy:
+    uses: msqube/deploy-hub/.github/workflows/deploy.yml@master
+    with:
+      config_file: 'config.yml'
+      deploy_hub_repo: 'deploy-hub'
+    secrets:
+      token: ${{ secrets.DEPLOY_HUB_TOKEN }}
