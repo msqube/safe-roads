@@ -1,4 +1,4 @@
-app_name: "safe_road_frontend"
+app_name: "safe-road-frontend"
 app_type: "frontend"
 framework: "vite"
 deployment_type: "process"
@@ -6,6 +6,5 @@ port: 8350
 node_version: "20"
 domain: "192.168.10.15"
 working_directory: "."
-health_check_path: "/"
 build_command: "npm install --legacy-peer-deps && npm run build"
-start_command: "npx serve -s dist -l {port}"
+
