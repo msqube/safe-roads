@@ -1,5 +1,4 @@
 name: safe_road_frontend
-
 on:
   push:
     branches:

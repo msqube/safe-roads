@@ -6,5 +6,5 @@ port: 8751
 node_version: "20"
 domain: "192.168.10.15"
 working_directory: "."
-build_command: "npm install --legacy-peer-deps && npm run build"
+build_command: "npm install --f && npm install --legacy-peer-deps && npm run build"
 
