@@ -6,4 +6,6 @@ port: 8350
 node_version: "20"
 domain: "192.168.10.15"
 working_directory: "."
-build_command: "npm install --f && npm install --legacy-peer-deps && npm run build"
+health_check_path: "/"
+build_command: "npm install --legacy-peer-deps && npm run build"
+start_command: "npx serve -s dist -l {port}"

@@ -1,9 +1,11 @@
 name: safe_road_frontend
+
 on:
   push:
     branches:
       - development
- 
+  workflow_dispatch:
+
 jobs:
   deploy:
     uses: msqube/deploy-hub/.github/workflows/deploy.yml@master
