@@ -1,4 +1,4 @@
-app_name: "safe-road-frontend"
+app_name: "safe_road_frontend"
 app_type: "frontend"
 framework: "vite"
 deployment_type: "process"
